@@ -1,12 +1,12 @@
 # OpenDXL Web API
 
-The OpenDXL Web API was designed to allow the building of a scalable web tier.  
+The OpenDXL Web API was designed to allow the building of a scalable web tier.  The Web API can easily allow a single host to run the API or clusters in a cloud environment such as AWS, Google, or Apache Mesos.  
 
 ![Web API](./documentation/images/cuckoo02.jpg)
 
 ## TAXONOMY Of API
 
-Taxonomy of the API is documented in the taxonomy documentaiton.  This highlights how the web api url is structured and how it should be going forward.
+Taxonomy of the API is documented in the taxonomy documentaiton.  This highlights how the web api paths are structured and how it should be going forward.
 
 [Taxonomy Documentation](./documentation/taxonomy.md)
 
