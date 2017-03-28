@@ -2,7 +2,7 @@
 
 The OpenDXL Web API was designed to allow the building of a scalable web tier.  The Web API can easily allow a single host to run the API or clusters in a cloud environment such as AWS, Google, or Apache Mesos.  
 
-![Web API](./documentation/images/cuckoo02.jpg)
+![Web API](./documentation/images/webapi.jpg)
 
 ## TAXONOMY Of API
 
