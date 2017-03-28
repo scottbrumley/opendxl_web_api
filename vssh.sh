@@ -1,3 +1,13 @@
 #!/usr/bin/env bash
+
 vagrant plugin install vagrant-vbguest
-vagrant up #&& vagrant ssh
+
+if [ "${1}" == "cuckoo" ]; then
+    echo "Set Up Cuckoo"
+    VAGRANT_VAGRANTFILE=Vagrantfile-cuckoo vagrant up
+else
+   echo "Web API Only"
+    vagrant up
+fi
+
+vagrant ssh
