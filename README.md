@@ -7,7 +7,7 @@ The OpenDXL Web API was designed to allow the building of a scalable web tier.  
 
      Many vendors allow automation from their equipment, but this support is often limited to technologies such as syslog, snmp, or URL POST/GET.
 *  **Certificate Spread:**
-x`
+
      Certificate based authentication management and security can be a challenge as certficates become spread across and enterprise with each new deployment.  A couple of the problems this often causes in operations are:
             
     1. **Certificate Mismatch**
