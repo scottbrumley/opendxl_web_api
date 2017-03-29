@@ -69,4 +69,4 @@ sudo touch /vagrant/dxlclient.config
 ## Setup Flask
 ## Use flask run --host=0.0.0.0 to start Flask
 sudo pip install Flask
-sudo echo 'export FLASK_APP=/vagrant/open_web_api.py' >> /etc/bash.bashrc
+sudo echo 'export FLASK_APP=/vagrant/opendxl_web_api.py' >> /etc/bash.bashrc
