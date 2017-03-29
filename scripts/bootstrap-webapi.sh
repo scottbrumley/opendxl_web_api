@@ -52,6 +52,13 @@ sudo git clone https://github.com/opendxl/opendxl-client-python.git
 cd /vagrant/opendxl-client-python
 sudo python setup.py install
 
+### Install Open DXL TIE Client
+echo "Installing Open DXL TIE Client"
+cd /vagrant
+sudo git clone https://github.com/opendxl/opendxl-tie-client-python.git
+cd /vagrant/opendxl-tie-client-python
+sudo python setup.py install
+
 ### Check OpenSSL
 SSL_VER=$(python -c 'import ssl; print(ssl.OPENSSL_VERSION)')
 
