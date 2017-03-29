@@ -27,6 +27,11 @@ Taxonomy of the API is documented in the taxonomy documentaiton.  This highlight
 
 [Taxonomy Documentation](./documentation/taxonomy.md)
 
+## Build and Deploy Project
+
+How to perform the automated build for this project.  As well as how to deploy the code into a remote production system or test system.
+
+[Build / Run Documentation](./documentation/build.md)
 
 ## LICENSE
 Copyright 2017 McAfee, Inc.
