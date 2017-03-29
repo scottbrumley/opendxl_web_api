@@ -135,6 +135,7 @@ ENV/
 .ropeproject
 
 opendxl-client-python
+opendxl-tie-client-python
 cuckoo
 .vagrant
 brokercerts/
