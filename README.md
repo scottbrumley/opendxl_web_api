@@ -19,19 +19,19 @@ The OpenDXL Web API was designed to allow the building of a scalable web tier.  
 * **Wrapper Services**
     While building a wrapper is fine as a work around but it lacks in operations because it has to be maintained in tandem to the code being wrapped.
 
-![Web API](./documentation/images/webapi.jpg)
+![Web API](docs/images/webapi.jpg)
 
 ## TAXONOMY Of API
 
 Taxonomy of the API is documented in the taxonomy documentaiton.  This highlights how the web api paths are structured and how it should be going forward.
 
-[Taxonomy Documentation](./documentation/taxonomy.md)
+[Taxonomy Documentation](docs/taxonomy.md)
 
 ## Build and Deploy Project
 
 How to perform the automated build for this project.  As well as how to deploy the code into a remote production system or test system.
 
-[Build / Run Documentation](./documentation/build.md)
+[Build / Run Documentation](docs/build.md)
 
 ## LICENSE
 Copyright 2017 McAfee, Inc.
