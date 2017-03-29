@@ -4,7 +4,7 @@
 
 Current Examples
 
-##Base URL
+## Base URL
 ```http://127.0.0.1```
 
 ## TIE "Threat Intelligence Exchange"
