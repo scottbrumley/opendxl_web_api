@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TIE File Reputation over DXL</title>
+
+    <h1>TIE File Reputation over DXL</h1>
+    {% if md5 and sha1 %}
+        <strong>MD5 Hash: </strong>{{md5}}<br>
+        <strong>SHA1 Hash: </strong> {{sha1}}<br>
+    {% else %}
+        <strong>MD5 Hash: </strong>{{md5}}<br>
+    {%endif%}
+
+    <strong>FileName: </strong>{{filename}} <br>
+    <br>
+    <hr>
+    {% for prop in propList %}
+        <strong>Provider: </strong>{{ prop.provider }} <br>
+        <strong>Reputation: </strong> {{ prop.reputation }} <br>
+        <br>
+    {% endfor %}
+
+    <br>
+    <br>
+    <hr>
+    <strong>Raw JSON:</strong> <br>
+    {{myReturnVal}}
+
+</head>
+<body>
+
+</body>
+</html>
