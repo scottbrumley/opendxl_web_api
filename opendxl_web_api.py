@@ -228,7 +228,6 @@ def setTieRep(md5,sha1):
             filename="tzsync.exe",
             comment="Reputation set via OpenDXL")
 
-        print TrustLevel.KNOWN_TRUSTED
         print "Succeeded."
         statusStr="Succeeded"
 
