@@ -21,6 +21,7 @@ from dxltieclient.constants import HashType, TrustLevel
 
 from flask import Flask
 from flask import render_template
+from flask import request
 
 # Import common logging and configuration
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/..")
@@ -170,8 +171,9 @@ def getFileProps(myReturnVal):
     return propList
 
 ### TIE GET FILE REP with MD5 hash
-@app.route('/tie/get/md5/<md5>/')
-def getMD5Rep(md5=None):
+@app.route('/tie/getfile/')
+def getMD5Rep():
+    md5 = request.args.get('md5')
     if (md5) and not md5 == "":
         filename = ""
         myReturnVal = getTieRep(md5,"")
