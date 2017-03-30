@@ -142,6 +142,24 @@ def getTieRep(md5,sha1):
     myReturnVal = json.dumps(response_dict, sort_keys=True, indent=4, separators=(',', ': '))
     return myReturnVal
 
+def is_sha1(maybe_sha):
+    if len(maybe_sha) != 40:
+        return False
+    try:
+        sha_int = int(maybe_sha, 16)
+    except ValueError:
+        return False
+    return True
+
+def is_md5(maybe_md5):
+    if len(maybe_md5) != 32:
+        return False
+    try:
+        md5_int = int(maybe_md5, 16)
+    except ValueError:
+        return False
+    return True
+
 def getFileProps(myReturnVal):
     fileProps = json.loads(myReturnVal)
     print fileProps['props']
@@ -174,29 +192,28 @@ def getFileProps(myReturnVal):
 @app.route('/tie/getfile/')
 def getMD5Rep():
     md5 = request.args.get('md5')
-    if (md5) and not md5 == "":
+    sha1 = request.args.get('sha1')
+
+    ### Verify SHA1 string
+    if not is_sha1(sha1):
+        myReturnVal = "Invalid SHA1"
+        return myReturnVal
+
+    if not is_md5(md5):
+        myReturnVal = "Invalid MD5"
+        return myReturnVal
+
+    if (md5) or (sha1):
         filename = ""
-        myReturnVal = getTieRep(md5,"")
+        myReturnVal = getTieRep(md5,sha1)
         ### Load JSON into fileProps Dictionary
         propList = getFileProps(myReturnVal)
-        return render_template('reputation.html', md5=md5, filename=filename, propList=propList, myReturnVal=myReturnVal,action="getfile")
+        return render_template('reputation.html', md5=md5, sha1=sha1, filename=filename, propList=propList, myReturnVal=myReturnVal,action="getfile")
     else:
         myReturnVal = "Sorry Nobody Home"
         return myReturnVal
 
-### TIE GET FILE REP with SHA1 hash
-@app.route('/tie/get/sha1/<sha1>/')
-def getSHA1Rep(sha1):
-    if (sha1):
-        ### Filename You are Checking in TIE
-        filename = ""
-        myReturnVal = getTieRep(sha1,"")
-        ### Load JSON into fileProps Dictionary
-        propList = getFileProps(myReturnVal)
-        return render_template('reputation.html', sha1=sha1, filename=filename, propList=propList, myReturnVal=myReturnVal,action="getfile")
-    else:
-        myReturnVal = "Sorry Nobody Home"
-        return myReturnVal
+
 
 ### TIE SET FILE REP
 @app.route('/tie/set/<path:md5>/<path:sha1>')
