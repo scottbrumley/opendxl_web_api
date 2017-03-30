@@ -195,6 +195,7 @@ def getFileProps(myReturnVal):
 def getMD5Rep():
     md5 = request.args.get('md5')
     sha1 = request.args.get('sha1')
+    json = request.args.get('json')
 
     ### Verify SHA1 string
     if not is_sha1(sha1):
@@ -210,7 +211,7 @@ def getMD5Rep():
         myReturnVal = getTieRep(md5,sha1)
         ### Load JSON into fileProps Dictionary
         propList = getFileProps(myReturnVal)
-        return render_template('reputation.html', md5=md5, sha1=sha1, filename=filename, propList=propList, myReturnVal=myReturnVal,action="getfile")
+        return render_template('reputation.html', md5=md5, sha1=sha1, filename=filename, propList=propList, myReturnVal=myReturnVal,action="getfile",json=json)
     else:
         myReturnVal = "You Need either and MD5 hash or an SHA1 hash to begin"
         return myReturnVal
