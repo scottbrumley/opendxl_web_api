@@ -174,7 +174,7 @@ def getTieRep(md5,sha1):
                 propDict['reputation'] = "Not Available"
             print ""
             propList.append(propDict)
-        return render_template('reputation.html', md5=md5, sha1=sha1, filename=filename, propList=propList, myReturnVal=myReturnVal)
+        return render_template('reputation.html', md5=md5, sha1=sha1, filename=filename, propList=propList, myReturnVal=myReturnVal,action="getfile")
     else:
         myReturnVal = "Sorry Nobody Home"
         return myReturnVal
@@ -182,7 +182,7 @@ def getTieRep(md5,sha1):
 @app.route('/tie/set/<path:md5>/<path:sha1>')
 @app.route('/tie/set/<path:md5>/', defaults={'sha1': ''})
 def setTieRep(md5,sha1):
-
+    statusStr="Failed"
     if not is_hex(md5):
         return "MD5 Value should be hex"
     if not is_hex(sha1) and not sha1 == "":
@@ -210,8 +210,10 @@ def setTieRep(md5,sha1):
             filename="tzsync.exe",
             comment="Reputation set via OpenDXL")
 
+        print TrustLevel.KNOWN_TRUSTED
         print "Succeeded."
-        return render_template('reputation.html', md5=md5, sha1=sha1)
+        statusStr="Succeeded"
+        return render_template('reputation.html', md5=md5, sha1=sha1,action="setfile",status=statusStr)
 
 ### Default API
 @app.route('/')
