@@ -142,6 +142,7 @@ def getTieRep(md5,sha1):
     myReturnVal = json.dumps(response_dict, sort_keys=True, indent=4, separators=(',', ': '))
     return myReturnVal
 
+## Check if it is a SHA1
 def is_sha1(maybe_sha):
     if len(maybe_sha) != 40:
         return False
@@ -151,6 +152,7 @@ def is_sha1(maybe_sha):
         return False
     return True
 
+## Check if it is an MD5
 def is_md5(maybe_md5):
     if len(maybe_md5) != 32:
         return False
