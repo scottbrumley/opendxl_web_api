@@ -7,10 +7,17 @@ import os
 import sys
 import json
 import base64
+import logging
+import os
+import sys
+import json
 
 from dxlclient.client import DxlClient
 from dxlclient.client_config import DxlClientConfig
 from dxlclient.message import Message, Request
+
+from dxltieclient import TieClient
+from dxltieclient.constants import HashType, TrustLevel
 
 from flask import Flask
 from flask import render_template
@@ -19,17 +26,26 @@ from flask import render_template
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/..")
 from common import *
 
-# Configure local logger
-logging.getLogger().setLevel(logging.ERROR)
-logger = logging.getLogger(__name__)
+# Enable logging, this will also direct built-in DXL log messages.
+# See - https://docs.python.org/2/howto/logging-cookbook.html
+log_formatter = logging.Formatter('%(asctime)s %(name)s - %(levelname)s - %(message)s')
 
-CONFIG_FILE = "/vagrant/dxlclient.config"
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(log_formatter)
+
+logger = logging.getLogger()
+logger.addHandler(console_handler)
+logger.setLevel(logging.INFO)
+
+CONFIG_FILE_NAME = "/vagrant/dxlclient.config"
 
 # The topic for requesting file reputations
-FILE_REP_TOPIC = "/mcafee/service/tie/file/reputation"
+FILE_GET_REP_TOPIC = "/mcafee/service/tie/file/reputation"
+FILE_SET_REP_TOPIC = "/mcafee/service/tie/file/reputation/set"
 
 # Create DXL configuration from file
-config = DxlClientConfig.create_dxl_config_from_file(CONFIG_FILE)
+config = DxlClientConfig.create_dxl_config_from_file(CONFIG_FILE_NAME)
+CONFIG_FILE = os.path.dirname(os.path.abspath(__file__)) + "/" + CONFIG_FILE_NAME
 
 ## Test value is hex
 def is_hex(s):
@@ -58,7 +74,7 @@ def get_tie_file_reputation(client, md5_hex, sha1_hex):
     :return: A dictionary containing the results of a TIE file reputation request
     """
     # Create the request message
-    req = Request(FILE_REP_TOPIC)
+    req = Request(FILE_GET_REP_TOPIC)
 
     # Create a dictionary for the payload
     payload_dict = {
@@ -102,9 +118,9 @@ def tie():
 ##### END TIE #####
 
 ### TIE API
-@app.route('/tie/<path:md5>/<path:sha1>')
-@app.route('/tie/<path:md5>/', defaults={'sha1': ''})
-def checkTieRep(md5,sha1):
+@app.route('/tie/get/<path:md5>/<path:sha1>')
+@app.route('/tie/get/<path:md5>/', defaults={'sha1': ''})
+def getTieRep(md5,sha1):
 
     if not is_hex(md5):
         return "MD5 Value should be hex"
@@ -163,11 +179,43 @@ def checkTieRep(md5,sha1):
         myReturnVal = "Sorry Nobody Home"
         return myReturnVal
 
+@app.route('/tie/set/<path:md5>/<path:sha1>')
+@app.route('/tie/set/<path:md5>/', defaults={'sha1': ''})
+def setTieRep(md5,sha1):
+
+    if not is_hex(md5):
+        return "MD5 Value should be hex"
+    if not is_hex(sha1) and not sha1 == "":
+        return "SHA1 Value should be hex"
+
+    md5_hex = md5
+    sha1_hex = sha1
+
+    # Create the client
+    with DxlClient(config) as client:
+
+        # Connect to the fabric
+        client.connect()
+
+        # Create the McAfee Threat Intelligence Exchange (TIE) client
+        tie_client = TieClient(client)
+
+        # Set the Enterprise reputation for notepad.exe to Known Trusted
+        tie_client.set_file_reputation(
+            TrustLevel.KNOWN_TRUSTED, {
+                HashType.MD5: "836E935C5539ED23FAD863CB823C0A8A",
+                HashType.SHA1: "D4186881780D48BF55D4D59171B115634E3C7BA6",
+                HashType.SHA256: "2859635FEBCC5C38470828DAAECFF49179716ADDFC5AD9FADEB89722842B381A"
+            },
+            filename="tzsync.exe",
+            comment="Reputation set via OpenDXL")
+
+        print "Succeeded."
 
 ### Default API
 @app.route('/')
 def hello_world():
-    return 'This is for authorized personel only.  Go away!'
+    return 'This is for authorized personnel only.  Go away!'
 
 if __name__ == '__main__':
     app.run()
