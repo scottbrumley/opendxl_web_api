@@ -17,7 +17,7 @@ The OpenDXL Web API was designed to allow the building of a scalable web tier.  
     
         Clients using certificates are a challenge for operations to track therefore they will use the original certificate and never reissue certificates.
 * **Wrapper Services**
-    While building a wrapper is fine as a work around but it lacks in operations because it has to be maintained in tandem to the code being wrapped.
+    While building a wrapper is a fine work around, it creates an operational challenge because it has to be maintained in tandem to the code being wrapped.  These types of services are easily forgotten upon upgrades.
 
 ![Web API](docs/images/webapi.jpg)
 
