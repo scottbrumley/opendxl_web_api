@@ -144,7 +144,7 @@ def getTieRep(md5,sha1):
                                                     sha1_hex=sha1_hex)
 
         ### Filename You are Checking in TIE
-        filename = "putty.exe"
+        filename = ""
         ### Dump Dictionary into JSON
         myReturnVal = json.dumps(response_dict, sort_keys=True, indent=4, separators=(',', ': '))
         ### Load JSON into fileProps Dictionary
@@ -213,7 +213,11 @@ def setTieRep(md5,sha1):
         print TrustLevel.KNOWN_TRUSTED
         print "Succeeded."
         statusStr="Succeeded"
-        return render_template('reputation.html', md5=md5, sha1=sha1,action="setfile",status=statusStr)
+
+        myReturnVal = {"md5": "" + md5 + "", "sha1": "" + sha1 + "", "status": "" + statusStr + ""}
+        json_data = json.dumps(myReturnVal)
+
+    return render_template('reputation.html', md5=md5, sha1=sha1,action="setfile",status=statusStr, myReturnVal=json_data)
 
 ### Default API
 @app.route('/')
