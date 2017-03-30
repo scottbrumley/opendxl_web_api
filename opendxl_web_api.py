@@ -120,7 +120,7 @@ def tie():
 
 ### TIE GET FILE REP
 @app.route('/tie/get/md5/<path:md5>/sha1/<path:sha1>')
-@app.route('/tie/get/md5/<path:md5>/', defaults={'sha1': '','md5': ''})
+@app.route('/tie/get/md5/<path:md5>/', defaults={'sha1': ''})
 def getTieRep(md5,sha1):
 
     if not is_hex(md5):
