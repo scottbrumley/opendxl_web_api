@@ -203,14 +203,15 @@ def setTieRep(md5,sha1):
         # Set the Enterprise reputation for notepad.exe to Known Trusted
         tie_client.set_file_reputation(
             TrustLevel.KNOWN_TRUSTED, {
-                HashType.MD5: "836E935C5539ED23FAD863CB823C0A8A",
-                HashType.SHA1: "D4186881780D48BF55D4D59171B115634E3C7BA6",
+                HashType.MD5: md5,
+                HashType.SHA1: sha1,
                 HashType.SHA256: "2859635FEBCC5C38470828DAAECFF49179716ADDFC5AD9FADEB89722842B381A"
             },
             filename="tzsync.exe",
             comment="Reputation set via OpenDXL")
 
         print "Succeeded."
+        return render_template('reputation.html', md5=md5, sha1=sha1)
 
 ### Default API
 @app.route('/')
