@@ -170,11 +170,10 @@ def getFileProps(myReturnVal):
     return propList
 
 ### TIE GET FILE REP with MD5 hash
-@app.route('/tie/get/md5/<path:md5>/')
-def getMD5Rep(md5):
-    if (md5):
-        ### Filename You are Checking in TIE
-        filename = ""
+@app.route('/tie/get/md5/<path:md5>')
+def getMD5Rep(md5,filename):
+    if (md5) and not md5 == "":
+        print md5
         myReturnVal = getTieRep(md5,"")
         ### Load JSON into fileProps Dictionary
         propList = getFileProps(myReturnVal)
