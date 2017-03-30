@@ -212,7 +212,7 @@ def getMD5Rep():
         propList = getFileProps(myReturnVal)
         return render_template('reputation.html', md5=md5, sha1=sha1, filename=filename, propList=propList, myReturnVal=myReturnVal,action="getfile")
     else:
-        myReturnVal = "Sorry Nobody Home"
+        myReturnVal = "You Need either and MD5 hash or an SHA1 hash to begin"
         return myReturnVal
 
 
