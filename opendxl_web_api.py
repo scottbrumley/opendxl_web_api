@@ -118,6 +118,7 @@ def tie():
     return "Path needs to be /service/action"
 ##### END TIE #####
 
+## Get the file reputation properties from TIE using md5 or sha1
 def getTieRep(md5,sha1):
     if not is_hex(md5):
         return "MD5 Value should be hex"
@@ -168,9 +169,7 @@ def getFileProps(myReturnVal):
         propList.append(propDict)
     return propList
 
-### TIE GET FILE REP
-#@app.route('/tie/get/<path:md5>/<path:sha1>')
-#@app.route('/tie/get/<path:md5>/', defaults={'sha1': ''})
+### TIE GET FILE REP with MD5 hash
 @app.route('/tie/get/md5/<path:md5>/')
 def getMD5Rep(md5):
     if (md5):
@@ -184,6 +183,7 @@ def getMD5Rep(md5):
         myReturnVal = "Sorry Nobody Home"
         return myReturnVal
 
+### TIE GET FILE REP with SHA1 hash
 @app.route('/tie/get/sha1/<path:sha1>/')
 def getSHA1Rep(sha1):
     if (sha1):
