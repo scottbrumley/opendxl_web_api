@@ -6,11 +6,11 @@
         <title>Get TIE File Reputation over DXL</title>
 
         <h1>Get TIE File Reputation over DXL</h1>
-        {% if md5 and sha1 %}
+        {% if md5 %}
             <strong>MD5 Hash: </strong>{{md5}}<br>
-            <strong>SHA1 Hash: </strong> {{sha1}}<br>
-        {% else %}
-            <strong>MD5 Hash: </strong>{{md5}}<br>
+        {% endif %}
+        {% if sha1 %}
+            <strong>SHA1 Hash: </strong> {{sha1}} <br>
         {%endif%}
 
         <strong>FileName: </strong>{{filename}} <br>
@@ -22,6 +22,7 @@
             <br>
         {% endfor %}
     {%  endif %}
+
     {% if action == "setfile" %}
         <title>Set TIE File Reputation over DXL</title>
 
