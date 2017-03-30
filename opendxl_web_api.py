@@ -64,6 +64,7 @@ def base64_from_hex(hexstr):
     """
     return base64.b64encode(hexstr.decode('hex'))
 
+
 def get_tie_file_reputation(client, md5_hex, sha1_hex):
     """
     Returns a dictionary containing the results of a TIE file reputation request
@@ -114,12 +115,12 @@ def about():
 ##### TIE #####
 @app.route('/tie')
 def tie():
-    return "Path needs to be /tie/md5_hash/sha1_hash"
+    return "Path needs to be /service/action"
 ##### END TIE #####
 
-### TIE API
-@app.route('/tie/get/<path:md5>/<path:sha1>')
-@app.route('/tie/get/<path:md5>/', defaults={'sha1': ''})
+### TIE GET FILE REP
+@app.route('/tie/get/md5/<path:md5>/sha1/<path:sha1>')
+@app.route('/tie/get/md5/<path:md5>/', defaults={'sha1': '','md5': ''})
 def getTieRep(md5,sha1):
 
     if not is_hex(md5):
@@ -179,6 +180,7 @@ def getTieRep(md5,sha1):
         myReturnVal = "Sorry Nobody Home"
         return myReturnVal
 
+### TIE SET FILE REP
 @app.route('/tie/set/<path:md5>/<path:sha1>')
 @app.route('/tie/set/<path:md5>/', defaults={'sha1': ''})
 def setTieRep(md5,sha1):
