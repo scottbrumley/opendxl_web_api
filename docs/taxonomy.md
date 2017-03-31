@@ -23,6 +23,10 @@
       
       http://127.0.0.1/tie/getfile?md5=hash&sha1=hash&sha256=hash
       
+      Append &json=1 to get only JSON format.
+      
+      http://127.0.0.1/tie/getfile?md5=hash&json=1
+      
       
 
 ### About
