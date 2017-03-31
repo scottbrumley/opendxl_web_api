@@ -172,27 +172,31 @@ def is_md5(maybe_md5):
 def getFileProps(myReturnVal):
     fileProps = json.loads(myReturnVal)
     propList = []
-    propDict = {}
 
     ## Check if keys exist and add properties to dictionary if they do
     if fileProps.has_key("1"):
+        propDict = {}
         propDict['provider'] = providerMap[fileProps['1']['providerId']]
         propDict['reputation'] = tiescoreMap[fileProps['1']['trustLevel']]
         propDict['createDate'] = fileProps['1']['createDate']
         propList.append(propDict)
 
     if fileProps.has_key("3"):
+        propDict = {}
         propDict['provider'] = providerMap[fileProps['3']['providerId']]
         propDict['reputation'] = tiescoreMap[fileProps['3']['trustLevel']]
         propDict['createDate'] = fileProps['3']['createDate']
         propList.append(propDict)
 
     if fileProps.has_key("5"):
+        propDict = {}
         propDict['provider'] = providerMap[fileProps['5']['providerId']]
         propDict['reputation'] = tiescoreMap[fileProps['5']['trustLevel']]
         propDict['createDate'] = fileProps['5']['createDate']
         propList.append(propDict)
+
     if fileProps.has_key("7"):
+        propDict = {}
         propDict['provider'] = providerMap[fileProps['7']['providerId']]
         propDict['reputation'] = tiescoreMap[fileProps['7']['trustLevel']]
         propDict['createDate'] = fileProps['7']['createDate']
