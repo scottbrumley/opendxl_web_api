@@ -3,9 +3,6 @@
 <head>
     <meta charset="UTF-8">
     {%  if action == "getfile" %}
-        {%  if json == "1" %}
-            {{myReturnVal}}
-        {% else %}
             <title>Get TIE File Reputation over DXL</title>
 
             <h1>Get TIE File Reputation over DXL</h1>
@@ -27,17 +24,9 @@
                 <br>
             {% endfor %}
             <br>
-            <br>
-            <hr>
-            <strong>Raw JSON:</strong> <br>
-            {{myReturnVal}}
-        {%  endif %}
     {%  endif %}
 
     {% if action == "setfile" %}
-        {%  if json == "1" %}
-            {{myReturnVal}}
-        {% else %}
             <title>Set TIE File Reputation over DXL</title>
 
             <h1>Set TIE File Reputation over DXL</h1>
@@ -49,11 +38,6 @@
             {%endif%}
             <strong>Reputation Change Status:</strong> {{ status }} <br>
             <br>
-            <br>
-            <hr>
-            <strong>Raw JSON:</strong> <br>
-            {{myReturnVal}}
-        {% endif %}
     {% endif %}
 </head>
 <body>
