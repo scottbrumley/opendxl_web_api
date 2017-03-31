@@ -33,6 +33,11 @@ How to perform the automated build for this project.  As well as how to deploy t
 
 [Build / Run Documentation](docs/build.md)
 
+## Cuckoo Flow
+
+
+![Cuckoo Flow01](docs/images/cuckoo01.jpg)
+
 ## LICENSE
 Copyright 2017 McAfee, Inc.
 
