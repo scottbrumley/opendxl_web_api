@@ -99,9 +99,9 @@ def get_tie_file_reputation(client, md5_hex, sha1_hex):
         raise Exception("Error: " + res.error_message + " (" + str(res.error_code) + ")")
 
 ## TIE Reputation Average Map
-tiescoreMap = {1:'Known Malicious', 15: 'Most Likely Malicious', 30: 'Might Be Malicious',50: 'Unknown',70:"Might Be Trusted",86: "Most Likely Trusted", 99: "Known Trusted"}
+tiescoreMap = {0:'Not Set', 1:'Known Malicious', 15: 'Most Likely Malicious', 30: 'Might Be Malicious',50: 'Unknown',70:"Might Be Trusted",85: "Most Likely Trusted", 99: "Known Trusted",100: "Known Trusted Installer"}
 ## TIE Provider Map
-providerMap = {1:'GTI', 3:'Enterprise Reputation'}
+providerMap = {1:'GTI', 3:'Enterprise Reputation', 5:'ATD',7:"MWG"}
 
 ## Start Web API
 
@@ -120,26 +120,25 @@ def tie():
 ##### END TIE #####
 
 ## Get the file reputation properties from TIE using md5 or sha1
-def getTieRep(md5,sha1):
-    if not is_hex(md5):
-        return "MD5 Value should be hex"
-    if not is_hex(sha1) and not sha1 == "":
-        return "SHA1 Value should be hex"
-
-    md5_hex = md5
-    sha1_hex = sha1
-
+def getTieRep(md5,sha1,sha256):
     with DxlClient(config) as client:
         # Connect to the fabric
         client.connect()
+
+        # Create the McAfee Threat Intelligence Exchange (TIE) client
+        tie_client = TieClient(client)
+
         #
-        # Request and display reputation for Putty
+        # Request and display reputation for notepad.exe
         #
-        response_dict = get_tie_file_reputation(client=client,
-                                                md5_hex= md5_hex,
-                                                sha1_hex=sha1_hex)
-    ### Dump Dictionary into JSON
-    myReturnVal = json.dumps(response_dict, sort_keys=True, indent=4, separators=(',', ': '))
+        reputations_dict = \
+            tie_client.get_file_reputation({
+                HashType.MD5: md5,
+                HashType.SHA1: sha1,
+                HashType.SHA256: sha256
+            })
+        myReturnVal = json.dumps(reputations_dict,
+                         sort_keys=True, indent=4, separators=(',', ': ')) + "\n"
     return myReturnVal
 
 ## Check if it is a SHA1
@@ -164,30 +163,33 @@ def is_md5(maybe_md5):
 
 def getFileProps(myReturnVal):
     fileProps = json.loads(myReturnVal)
-    print fileProps['props']
     propList = []
+    propDict = {}
 
-    for provider in fileProps['reputations']:
-        propDict = {}
-        providerID = int(provider['providerId'])
-        trustLevel = int(provider['trustLevel'])
-
-        print "Create Date: " + str(provider['createDate'])
-        if (providerID in providerMap):
-            print "Provider: " + str(providerMap[providerID])
-            propDict['provider'] = str(providerMap[providerID])
-        else:
-            print "Provider: Not Available"
-            propDict['provider'] = "Not Available"
-
-        if (trustLevel in tiescoreMap):
-            print "Reputation: " + str(tiescoreMap[trustLevel])
-            propDict['reputation'] = str(tiescoreMap[trustLevel])
-        else:
-            print "Reputation: Not Available"
-            propDict['reputation'] = "Not Available"
-        print ""
+    ## Check if keys exist and add properties to dictionary if they do
+    if fileProps.has_key("1"):
+        propDict['provider'] = providerMap[fileProps['1']['providerId']]
+        propDict['reputation'] = tiescoreMap[fileProps['1']['trustLevel']]
+        propDict['createDate'] = fileProps['1']['createDate']
         propList.append(propDict)
+
+    if fileProps.has_key("3"):
+        propDict['provider'] = providerMap[fileProps['3']['providerId']]
+        propDict['reputation'] = tiescoreMap[fileProps['3']['trustLevel']]
+        propDict['createDate'] = fileProps['3']['createDate']
+        propList.append(propDict)
+
+    if fileProps.has_key("5"):
+        propDict['provider'] = providerMap[fileProps['5']['providerId']]
+        propDict['reputation'] = tiescoreMap[fileProps['5']['trustLevel']]
+        propDict['createDate'] = fileProps['5']['createDate']
+        propList.append(propDict)
+    if fileProps.has_key("7"):
+        propDict['provider'] = providerMap[fileProps['7']['providerId']]
+        propDict['reputation'] = tiescoreMap[fileProps['7']['trustLevel']]
+        propDict['createDate'] = fileProps['7']['createDate']
+        propList.append(propDict)
+
     return propList
 
 ### TIE GET FILE REP with MD5 hash
@@ -196,25 +198,27 @@ def getMD5Rep():
     md5 = request.args.get('md5')
     sha1 = request.args.get('sha1')
     json = request.args.get('json')
+    sha256 = request.args.get('sha256')
 
-    ### Verify SHA1 string
-    if not is_sha1(sha1):
-        myReturnVal = "Invalid SHA1"
-        return myReturnVal
-
-    if not is_md5(md5):
-        myReturnVal = "Invalid MD5"
-        return myReturnVal
-
-    if (md5) or (sha1):
-        filename = ""
-        myReturnVal = getTieRep(md5,sha1)
-        ### Load JSON into fileProps Dictionary
-        propList = getFileProps(myReturnVal)
-        return render_template('reputation.html', md5=md5, sha1=sha1, filename=filename, propList=propList, myReturnVal=myReturnVal,action="getfile",json=json)
-    else:
+    if md5 == None and sha1 == None:
         myReturnVal = "You Need either and MD5 hash or an SHA1 hash to begin"
         return myReturnVal
+    else:
+        ### Verify SHA1 string
+        if sha1 != None:
+            if not is_sha1(sha1):
+                myReturnVal = "Invalid SHA1"
+                return myReturnVal
+
+        if md5 != None:
+            if not is_md5(md5):
+                myReturnVal = "Invalid MD5"
+                return myReturnVal
+
+        myReturnVal = getTieRep(md5,sha1,sha256)
+        ### Load JSON into fileProps Dictionary
+        propList = getFileProps(myReturnVal)
+        return render_template('reputation.html', md5=md5, sha1=sha1, propList=propList, myReturnVal=myReturnVal,action="getfile",json=json)
 
 
 
