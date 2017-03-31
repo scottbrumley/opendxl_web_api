@@ -11,17 +11,17 @@
 ### TIE "Threat Intelligence Exchange"
 * Set TIE Reputation
 
-      /tie/set
+      /tie/setfile
 
 * Get TIE Reputation
       
-      /tie/get
+      /tie/getfile
 
 * Examples:
       
-      Add either the MD5 for the file you want to find or both MD5 and SHA1 for the file.
+      You can use the MD5, SHA1, or SHA256 hash for any file to retrieve it's reputation.
       
-      http://127.0.0.1/tie/get/md5-hash/sha1-hash
+      http://127.0.0.1/tie/getfile?md5=hash&sha1=hash&sha256=hash
       
       
 
