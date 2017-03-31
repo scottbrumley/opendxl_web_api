@@ -17,11 +17,12 @@ from dxlclient.client_config import DxlClientConfig
 from dxlclient.message import Message, Request
 
 from dxltieclient import TieClient
-from dxltieclient.constants import HashType, TrustLevel
+from dxltieclient.constants import HashType, TrustLevel, FileProvider, ReputationProp, CertProvider, CertReputationProp, CertReputationOverriddenProp
 
 from flask import Flask
 from flask import render_template
 from flask import request
+from flask import jsonify
 
 # Import common logging and configuration
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/..")
@@ -136,8 +137,8 @@ def getTieRep(md5,sha1,sha256):
         if sha256:
             reputations_dict = tie_client.get_file_reputation({HashType.SHA256: sha256})
 
-        myReturnVal = json.dumps(reputations_dict, sort_keys=True, indent=4, separators=(',', ': ')) + "\n"
-    return myReturnVal
+        #myReturnVal = json.dumps(reputations_dict, sort_keys=True, indent=4, separators=(',', ': ')) + "\n"
+    return reputations_dict
 
 ## Check if it is a SHA1
 def is_sha1(maybe_sha):
@@ -170,36 +171,35 @@ def is_md5(maybe_md5):
     return True
 
 def getFileProps(myReturnVal):
-    fileProps = json.loads(myReturnVal)
+    fileProps = myReturnVal
     propList = []
 
-    ## Check if keys exist and add properties to dictionary if they do
-    if fileProps.has_key("1"):
+    if FileProvider.GTI in fileProps:
         propDict = {}
-        propDict['provider'] = providerMap[fileProps['1']['providerId']]
-        propDict['reputation'] = tiescoreMap[fileProps['1']['trustLevel']]
-        propDict['createDate'] = fileProps['1']['createDate']
+        propDict['provider'] = providerMap[fileProps[FileProvider.GTI]['providerId']]
+        propDict['reputation'] = tiescoreMap[fileProps[FileProvider.GTI]['trustLevel']]
+        propDict['createDate'] = fileProps[FileProvider.GTI]['createDate']
         propList.append(propDict)
 
-    if fileProps.has_key("3"):
+    if FileProvider.ENTERPRISE in fileProps:
         propDict = {}
-        propDict['provider'] = providerMap[fileProps['3']['providerId']]
-        propDict['reputation'] = tiescoreMap[fileProps['3']['trustLevel']]
-        propDict['createDate'] = fileProps['3']['createDate']
+        propDict['provider'] = providerMap[fileProps[FileProvider.ENTERPRISE]['providerId']]
+        propDict['reputation'] = tiescoreMap[fileProps[FileProvider.ENTERPRISE]['trustLevel']]
+        propDict['createDate'] = fileProps[FileProvider.ENTERPRISE]['createDate']
         propList.append(propDict)
 
-    if fileProps.has_key("5"):
+    if FileProvider.ATD in fileProps:
         propDict = {}
-        propDict['provider'] = providerMap[fileProps['5']['providerId']]
-        propDict['reputation'] = tiescoreMap[fileProps['5']['trustLevel']]
-        propDict['createDate'] = fileProps['5']['createDate']
+        propDict['provider'] = providerMap[fileProps[FileProvider.ATD]['providerId']]
+        propDict['reputation'] = tiescoreMap[fileProps[FileProvider.ATD]['trustLevel']]
+        propDict['createDate'] = fileProps[FileProvider.ATD]['createDate']
         propList.append(propDict)
 
-    if fileProps.has_key("7"):
+    if FileProvider.MWG in fileProps:
         propDict = {}
-        propDict['provider'] = providerMap[fileProps['7']['providerId']]
-        propDict['reputation'] = tiescoreMap[fileProps['7']['trustLevel']]
-        propDict['createDate'] = fileProps['7']['createDate']
+        propDict['provider'] = providerMap[fileProps[FileProvider.MWG]['providerId']]
+        propDict['reputation'] = tiescoreMap[fileProps[FileProvider.MWG]['trustLevel']]
+        propDict['createDate'] = fileProps[FileProvider.MWG]['createDate']
         propList.append(propDict)
 
     return propList
@@ -207,36 +207,55 @@ def getFileProps(myReturnVal):
 ### TIE GET FILE REP with MD5 hash
 @app.route('/tie/getfile/')
 def getFileRep():
-    md5 = request.args.get('md5')
-    sha1 = request.args.get('sha1')
-    json = request.args.get('json')
-    sha256 = request.args.get('sha256')
+    json = "false"
+    md5 = None
+    sha1 = None
+    sha256 = None
+
+    if request.args.get('md5'):
+        md5 = request.args.get('md5')
+    if request.args.get('sha1'):
+        sha1 = request.args.get('sha1')
+    if request.args.get('json'):
+        json = request.args.get('json')
+    if request.args.get('sha256'):
+        sha256 = request.args.get('sha256')
 
     if md5 == None and sha1 == None and sha256 == None:
-        myReturnVal = '{"error": "no file hash"}'
-        return myReturnVal
+        return jsonify(
+            error= "no file hash"
+        )
     else:
         ### Verify SHA1 string
         if sha1 != None:
             if not is_sha1(sha1):
-                myReturnVal = '{"error": "invalid sha1"}'
-                return myReturnVal
+                return jsonify(
+                    error= "invalid sha1"
+                )
 
         ### Verify SHA256 string
         if sha256 != None:
             if not is_sha256(sha256):
-                myReturnVal = '{"error": "invalid sha256"}'
-                return myReturnVal
+                return jsonify(
+                    error= "invalid sha256"
+                )
 
         if md5 != None:
             if not is_md5(md5):
-                myReturnVal = '{"error": "invalid md5"}'
-                return myReturnVal
+                return jsonify(
+                    error= "invalid md5"
+                )
 
-        myReturnVal = getTieRep(md5,sha1,sha256)
+        myReturnProps = getTieRep(md5,sha1,sha256)
         ### Load JSON into fileProps Dictionary
-        propList = getFileProps(myReturnVal)
-        return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, propList=propList, myReturnVal=myReturnVal,action="getfile",json=json)
+        propList = getFileProps(myReturnProps)
+
+        if json == "true":
+            return jsonify(
+                myReturnProps
+            )
+        else:
+            return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, propList=propList,action="getfile",json=json)
 
 ### TIE SET FILE REP
 @app.route('/tie/set/<path:md5>/<path:sha1>')
