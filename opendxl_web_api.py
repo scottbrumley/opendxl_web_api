@@ -131,14 +131,14 @@ def getTieRep(md5,sha1,sha256):
         #
         # Request and display reputation for notepad.exe
         #
-        reputations_dict = \
-            tie_client.get_file_reputation({
-                HashType.MD5: md5,
-                HashType.SHA1: sha1,
-                HashType.SHA256: sha256
-            })
-        myReturnVal = json.dumps(reputations_dict,
-                         sort_keys=True, indent=4, separators=(',', ': ')) + "\n"
+        if md5:
+            reputations_dict = tie_client.get_file_reputation({HashType.MD5: md5})
+        if sha1:
+            reputations_dict = tie_client.get_file_reputation({HashType.SHA1: sha1})
+        if sha256:
+            reputations_dict = tie_client.get_file_reputation({HashType.SHA256: sha256})
+
+        myReturnVal = json.dumps(reputations_dict, sort_keys=True, indent=4, separators=(',', ': ')) + "\n"
     return myReturnVal
 
 ## Check if it is a SHA1
@@ -218,7 +218,7 @@ def getMD5Rep():
         myReturnVal = getTieRep(md5,sha1,sha256)
         ### Load JSON into fileProps Dictionary
         propList = getFileProps(myReturnVal)
-        return render_template('reputation.html', md5=md5, sha1=sha1, propList=propList, myReturnVal=myReturnVal,action="getfile",json=json)
+        return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, propList=propList, myReturnVal=myReturnVal,action="getfile",json=json)
 
 
 
