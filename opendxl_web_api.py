@@ -236,8 +236,6 @@ def getMD5Rep():
         propList = getFileProps(myReturnVal)
         return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, propList=propList, myReturnVal=myReturnVal,action="getfile",json=json)
 
-
-
 ### TIE SET FILE REP
 @app.route('/tie/set/<path:md5>/<path:sha1>')
 @app.route('/tie/set/<path:md5>/', defaults={'sha1': ''})
