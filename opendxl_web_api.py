@@ -151,6 +151,16 @@ def is_sha1(maybe_sha):
         return False
     return True
 
+## Check if it is a SHA256
+def is_sha256(maybe_sha):
+    if len(maybe_sha) != 64:
+        return False
+    try:
+        sha_int = int(maybe_sha, 16)
+    except ValueError:
+        return False
+    return True
+
 ## Check if it is an MD5
 def is_md5(maybe_md5):
     if len(maybe_md5) != 32:
@@ -200,7 +210,7 @@ def getMD5Rep():
     json = request.args.get('json')
     sha256 = request.args.get('sha256')
 
-    if md5 == None and sha1 == None:
+    if md5 == None and sha1 == None and sha256 == None:
         myReturnVal = "You Need either and MD5 hash or an SHA1 hash to begin"
         return myReturnVal
     else:
@@ -208,6 +218,12 @@ def getMD5Rep():
         if sha1 != None:
             if not is_sha1(sha1):
                 myReturnVal = "Invalid SHA1"
+                return myReturnVal
+
+        ### Verify SHA256 string
+        if sha256 != None:
+            if not is_sha256(sha256):
+                myReturnVal = "Invalid SHA256"
                 return myReturnVal
 
         if md5 != None:
