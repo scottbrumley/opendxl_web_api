@@ -55,7 +55,6 @@ def is_hex(s):
         return True
     except ValueError:
         return False
-
 def base64_from_hex(hexstr):
     """
     Returns the base64 string for the hex string specified
@@ -64,7 +63,6 @@ def base64_from_hex(hexstr):
     :return: The base64 value for the specified hes string
     """
     return base64.b64encode(hexstr.decode('hex'))
-
 
 def get_tie_file_reputation(client, md5_hex, sha1_hex):
     """
@@ -204,31 +202,31 @@ def getFileProps(myReturnVal):
 
 ### TIE GET FILE REP with MD5 hash
 @app.route('/tie/getfile/')
-def getMD5Rep():
+def getFileRep():
     md5 = request.args.get('md5')
     sha1 = request.args.get('sha1')
     json = request.args.get('json')
     sha256 = request.args.get('sha256')
 
     if md5 == None and sha1 == None and sha256 == None:
-        myReturnVal = "You Need either and MD5 hash or an SHA1 hash to begin"
+        myReturnVal = '{"error": "no file hash"}'
         return myReturnVal
     else:
         ### Verify SHA1 string
         if sha1 != None:
             if not is_sha1(sha1):
-                myReturnVal = "Invalid SHA1"
+                myReturnVal = '{"error": "invalid sha1"}'
                 return myReturnVal
 
         ### Verify SHA256 string
         if sha256 != None:
             if not is_sha256(sha256):
-                myReturnVal = "Invalid SHA256"
+                myReturnVal = '{"error": "invalid sha256"}'
                 return myReturnVal
 
         if md5 != None:
             if not is_md5(md5):
-                myReturnVal = "Invalid MD5"
+                myReturnVal = '{"error": "invalid md5"}'
                 return myReturnVal
 
         myReturnVal = getTieRep(md5,sha1,sha256)
@@ -240,7 +238,7 @@ def getMD5Rep():
 @app.route('/tie/set/<path:md5>/<path:sha1>')
 @app.route('/tie/set/<path:md5>/', defaults={'sha1': ''})
 def setTieRep(md5,sha1):
-    statusStr="Failed"
+    statusStr = {"error": "TIE reputation set failed"}
     if not is_hex(md5):
         return "MD5 Value should be hex"
     if not is_hex(sha1) and not sha1 == "":
