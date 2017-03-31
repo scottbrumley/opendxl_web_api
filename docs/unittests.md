@@ -6,7 +6,7 @@
 * Check connection to DXL
 * Check connection to TIE server
 
-## Check getfile
+## Check getfile "Happy Path"
 * Check SHA1 only
 * SHA256 only
 * MD5 only
