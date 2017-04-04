@@ -20,6 +20,12 @@ function stop {
     rm -rf ${FLASK_PID_FILE}
 }
 
+function restart {
+    echo "Restarting Flask ..."
+    stop
+    start
+}
+
 function test {
     /vagrant/tests/urltests.sh
     if [[ $? == 1 ]]; then
