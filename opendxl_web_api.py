@@ -267,7 +267,7 @@ def getTrustLevel(trustlevelStr):
         return TrustLevel.MOST_LIKELY_TRUSTED
     elif trustlevelStr == 'might_be_trusted':
         return TrustLevel.MIGHT_BE_TRUSTED
-    elif trustlevelStr == 'unkown':
+    elif trustlevelStr == 'unknown':
         return TrustLevel.UNKNOWN
     elif trustlevelStr == 'might_be_malicious':
         return TrustLevel.MIGHT_BE_MALICIOUS
