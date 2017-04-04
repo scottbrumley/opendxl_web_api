@@ -12,6 +12,7 @@ function test_http_code {
     if [[ ${HTTP_CODE} == "200" ]]; then
         echo "TEST SUCCESS: ${TEST_NAME}"
     else
+        echo ""
         echo "TEST FAILED: ${TEST_NAME}"
         exit 1
     fi
@@ -23,6 +24,7 @@ function test_sha1 {
     echo "     Testing ${TEST_URL}/tie/getfile/?sha1=${SHA1_TEST}&json=true ####"
     WEB_CONTENT=$(sudo wget -O - "${TEST_URL}/tie/getfile/?sha1=${SHA1_TEST}&json=true" 2>&1)
     if [[ ${WEB_CONTENT} == *"error"* ]]; then
+        echo ""
         echo "TEST FAILED: ${TEST_NAME}"
         echo $WEB_CONTENT
         exit 1
@@ -37,6 +39,7 @@ function test_sha256 {
     echo "     Testing ${TEST_URL}/tie/getfile/?sha256=${SHA256_TEST}&json=true ####"
     WEB_CONTENT=$(sudo wget -O - "${TEST_URL}/tie/getfile/?sha256=${SHA256_TEST}&json=true" 2>&1)
     if [[ ${WEB_CONTENT} == *"error"* ]]; then
+        echo ""
         echo "TEST FAILED: ${TEST_NAME}"
         echo $WEB_CONTENT
         exit 1
@@ -51,6 +54,7 @@ function test_md5 {
     echo "     Testing ${TEST_URL}/tie/getfile/?md5=${MD5_TEST}&json=true ####"
     WEB_CONTENT=$(sudo wget -O - "${TEST_URL}/tie/getfile/?md5=${MD5_TEST}&json=true" 2>&1)
     if [[ ${WEB_CONTENT} == *"error"* ]]; then
+        echo ""
         echo "TEST FAILED: ${TEST_NAME}"
         echo $WEB_CONTENT
         exit 1
