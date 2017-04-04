@@ -26,7 +26,7 @@
 7. Copy dxlclient.config to your / root directory
 
 ## Running TIE Web API Recipe
-1. Run 'flask run --host=0.0.0.0'
+1. Run /vagrant/scripts/run.sh start (other options stop and status)
 2. Connect http://127.0.0.1:5000/tie/somemd5hash
 
 ### A good test is to try: http://127.0.0.1:5000/about
