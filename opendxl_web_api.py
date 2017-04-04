@@ -257,6 +257,28 @@ def getFileRep():
         else:
             return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, propList=propList,action="getfile",json=json)
 
+def getTrustLevel(trustlevelStr):
+    trustlevelStr = trustlevelStr.lower()
+    if trustlevelStr == 'known_trusted':
+        return TrustLevel.KNOWN_TRUSTED
+    elif trustlevelStr == 'known_trusted_install':
+        return TrustLevel.KNOWN_TRUSTED_INSTALLER
+    elif trustlevelStr == 'most_likely_trusted':
+        return TrustLevel.MOST_LIKELY_TRUSTED
+    elif trustlevelStr == 'might_be_trusted':
+        return TrustLevel.MIGHT_BE_TRUSTED
+    elif trustlevelStr == 'unkown':
+        return TrustLevel.UNKNOWN
+    elif trustlevelStr == 'might_be_malicious':
+        return TrustLevel.MIGHT_BE_MALICIOUS
+    elif trustlevelStr == 'most_likely_malicious':
+        return TrustLevel.MOST_LIKELY_MALICIOUS
+    elif trustlevelStr == 'known_malicious':
+        return TrustLevel.KNOWN_MALICIOUS
+    elif trustlevelStr == 'not_set':
+        return TrustLevel.NOT_SET
+    return -1
+
 ### TIE SET FILE REP
 @app.route('/tie/setfile/')
 def setTieRep():
@@ -265,6 +287,8 @@ def setTieRep():
     sha1 = ""
     sha256 = ""
     filenameStr = ""
+    trustLevelStr = ""
+
     commentStr = "Reputation set via OpenDXL"
 
     if request.args.get('md5'):
@@ -279,6 +303,10 @@ def setTieRep():
         filenameStr = request.args.get('filename')
     if request.args.get('comment'):
         commentStr = request.args.get('comment')
+    if request.args.get('trustlevel'):
+        trustlevelStr = request.args.get('trustlevel')
+
+    trustlevelInt = getTrustLevel(trustlevelStr)
 
     if md5 == None and sha1 == None and sha256 == None:
         return jsonify(
@@ -314,22 +342,28 @@ def setTieRep():
         # Create the McAfee Threat Intelligence Exchange (TIE) client
         tie_client = TieClient(client)
 
-        # Set the Enterprise reputation for notepad.exe to Known Trusted
-        tie_client.set_file_reputation(
-            TrustLevel.KNOWN_TRUSTED, {
-                HashType.MD5: md5,
-                HashType.SHA1: sha1,
-                HashType.SHA256: sha256
-            },
-            filename="tzsync.exe",
-            comment="Reputation set via OpenDXL")
+        if trustlevelInt != -1:
+            # Set the Enterprise reputation for notepad.exe to Known Trusted
+            tie_client.set_file_reputation(
+                trustlevelInt , {
+                    HashType.MD5: md5,
+                    HashType.SHA1: sha1,
+                    HashType.SHA256: sha256
+                },
+                filename=filenameStr,
+                comment=commentStr)
+        else:
+            return jsonify(
+                error = "invalid trust level",
+                trustlevel = trustlevelStr
+            )
 
     if json == "true":
         return jsonify(
-            status="Succeeded"
+            status=trustlevelStr
         )
     else:
-        return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, action="setfile",json=json)
+        return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, status=trustlevelStr, filename=filenameStr, comment=commentStr, action="setfile",json=json)
 
 ### Default API
 @app.route('/')
