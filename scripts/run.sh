@@ -38,3 +38,14 @@ if [[ ${1} == "stop" ]]; then
     stop
     echo "Flask Stopped"
 fi
+
+if [[ ${1} == "status" ]]; then
+    if [ -z $FLASK_PID ]; then
+        echo "Flask is stopped"
+    else
+        CURR_PID=$(ps -p $FLASK_PID)
+        if [[ "$CURR_PID" == *${FLASK_PID}* ]]; then
+            echo "Flask is running"
+        fi
+    fi
+fi
