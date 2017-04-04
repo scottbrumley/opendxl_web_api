@@ -258,17 +258,52 @@ def getFileRep():
             return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, propList=propList,action="getfile",json=json)
 
 ### TIE SET FILE REP
-@app.route('/tie/set/<path:md5>/<path:sha1>')
-@app.route('/tie/set/<path:md5>/', defaults={'sha1': ''})
-def setTieRep(md5,sha1):
-    statusStr = {"error": "TIE reputation set failed"}
-    if not is_hex(md5):
-        return "MD5 Value should be hex"
-    if not is_hex(sha1) and not sha1 == "":
-        return "SHA1 Value should be hex"
+@app.route('/tie/setfile/')
+def setTieRep():
+    json = "false"
+    md5 = ""
+    sha1 = ""
+    sha256 = ""
+    filenameStr = ""
+    commentStr = "Reputation set via OpenDXL"
 
-    md5_hex = md5
-    sha1_hex = sha1
+    if request.args.get('md5'):
+        md5 = request.args.get('md5')
+    if request.args.get('sha1'):
+        sha1 = request.args.get('sha1')
+    if request.args.get('json'):
+        json = request.args.get('json')
+    if request.args.get('sha256'):
+        sha256 = request.args.get('sha256')
+    if request.args.get('filename'):
+        filenameStr = request.args.get('filename')
+    if request.args.get('comment'):
+        commentStr = request.args.get('comment')
+
+    if md5 == None and sha1 == None and sha256 == None:
+        return jsonify(
+            error= "no file hash"
+        )
+    else:
+        ### Verify SHA1 string
+        if sha1 != "":
+            if not is_sha1(sha1):
+                return jsonify(
+                    error= "invalid sha1"
+                )
+
+        ### Verify SHA256 string
+        if sha256 != "":
+            if not is_sha256(sha256):
+                return jsonify(
+                    error= "invalid sha256"
+                )
+
+        if md5 != "":
+            if not is_md5(md5):
+                return jsonify(
+                    error= "invalid md5"
+                )
 
     # Create the client
     with DxlClient(config) as client:
@@ -284,18 +319,17 @@ def setTieRep(md5,sha1):
             TrustLevel.KNOWN_TRUSTED, {
                 HashType.MD5: md5,
                 HashType.SHA1: sha1,
-                HashType.SHA256: "2859635FEBCC5C38470828DAAECFF49179716ADDFC5AD9FADEB89722842B381A"
+                HashType.SHA256: sha256
             },
             filename="tzsync.exe",
             comment="Reputation set via OpenDXL")
 
-        print "Succeeded."
-        statusStr="Succeeded"
-
-        myReturnVal = {"md5": "" + md5 + "", "sha1": "" + sha1 + "", "status": "" + statusStr + ""}
-        json_data = json.dumps(myReturnVal)
-
-    return render_template('reputation.html', md5=md5, sha1=sha1,action="setfile",status=statusStr, myReturnVal=json_data)
+    if json == "true":
+        return jsonify(
+            status="Succeeded"
+        )
+    else:
+        return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, action="setfile",json=json)
 
 ### Default API
 @app.route('/')
