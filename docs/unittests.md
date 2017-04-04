@@ -10,8 +10,6 @@
 * Check SHA1 only
 * SHA256 only
 * MD5 only
-* MD5 + SHA1
-* MD5 + SHA1 + SHA256
 * Check JSON for each
 
 ## Test BAD Hashes
