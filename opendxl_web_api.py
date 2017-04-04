@@ -288,7 +288,6 @@ def setTieRep():
     sha256 = ""
     filenameStr = ""
     trustLevelStr = ""
-
     commentStr = "Reputation set via OpenDXL"
 
     if request.args.get('md5'):
