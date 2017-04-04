@@ -45,6 +45,11 @@ if [[ ${1} == "stop" ]]; then
     echo "Flask Stopped"
 fi
 
+if [[ ${1} == "restart" ]]; then
+    restart
+    echo "Flask Restarted"
+fi
+
 if [[ ${1} == "status" ]]; then
     if [ -z $FLASK_PID ]; then
         echo "Flask is stopped"
