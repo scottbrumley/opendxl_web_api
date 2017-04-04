@@ -30,11 +30,14 @@
             <title>Set TIE File Reputation over DXL</title>
 
             <h1>Set TIE File Reputation over DXL</h1>
-            {% if md5 and sha1 %}
+            {% if md5 %}
                 <strong>MD5 Hash: </strong>{{md5}}<br>
-                <strong>SHA1 Hash: </strong> {{sha1}}<br>
-            {% else %}
-                <strong>MD5 Hash: </strong>{{md5}}<br>
+            {% endif %}
+            {% if sha1 %}
+                <strong>SHA1 Hash: </strong> {{sha1}} <br>
+            {%endif%}
+            {% if sha256 %}
+                <strong>SHA256 Hash: </strong> {{sha256}} <br>
             {%endif%}
             <strong>Reputation Change Status:</strong> {{ status }} <br>
             <br>
