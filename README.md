@@ -33,7 +33,7 @@ How to perform the automated build for this project.  As well as how to deploy t
 
 [Build / Run Documentation](docs/build.md)
 
-##Cuckoo
+## Cuckoo
 
 #### Configuration Examples
 [Cuckoo Notification Configuration](docs/cuckoo.md)
@@ -41,7 +41,7 @@ How to perform the automated build for this project.  As well as how to deploy t
 #### Cuckoo Flow
 ![Cuckoo Flow01](docs/images/cuckoo01.jpg)
 
-##FireEye
+## FireEye
 
 #### Configuration Example
 [FireEye Notification Configuration](docs/fireeye.md)
