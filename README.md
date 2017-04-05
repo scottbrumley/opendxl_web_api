@@ -22,7 +22,7 @@ The OpenDXL Web API was designed to allow the building of a scalable web tier.  
 ## Architecture
 ![Web API](docs/images/webapi.jpg)
 
-## Build and Deploy Project
+## Build Development Environment / Deploy To Production
 
 How to perform the automated build for this project.  As well as how to deploy the code into a remote production system or test system.
 
