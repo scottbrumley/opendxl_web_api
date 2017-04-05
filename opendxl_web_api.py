@@ -407,6 +407,51 @@ def setTieRep():
     if request.method == 'POST':
         data = request.form
 
+### TIE SET FILE REP
+@app.route('/tie/fireeye/setfile/<myToken>', methods = ['GET','POST'])
+def setFireEyeTieRep(myToken):
+#        md5 = ""
+#        sha1 = ""
+#        sha256 = ""
+#        filenameStr = ""
+#        trustLevelStr = ""
+#        commentStr = "Reputation set via OpenDXL"
+
+#        if request.args.get('md5'):
+#            md5 = request.args.get('md5')
+#        if request.args.get('sha1'):
+#            sha1 = request.args.get('sha1')
+#        if request.args.get('json'):
+#            json = request.args.get('json')
+#        if request.args.get('sha256'):
+#            sha256 = request.args.get('sha256')
+#        if request.args.get('filename'):
+#            filenameStr = request.args.get('filename')
+#        if request.args.get('comment'):
+#            commentStr = request.args.get('comment')
+#        if request.args.get('trustlevel'):
+#            trustlevelStr = request.args.get('trustlevel')
+
+    if not authenticate(myToken):
+        return jsonify(
+            access = "access denied"
+        )
+
+    content = request.json
+    print content['product']
+
+#        data = request.form
+
+#        setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr)
+
+#        if json == "true":
+#            return jsonify(
+#                status=trustlevelStr
+#            )
+#        else:
+#            return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, status=trustlevelStr, filename=filenameStr, comment=commentStr, action="setfile",json=json)
+    return jsonify(request.json)
+
 ### Default API
 @app.route('/')
 def root_path():
