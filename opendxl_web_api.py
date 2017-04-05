@@ -109,12 +109,26 @@ app = Flask(__name__)
 ##### About #####
 @app.route('/about')
 def about():
+    if request.args.get('token'):
+        myToken = request.args.get('token')
+
+    if not authenticate(myToken):
+        return jsonify(
+            access = "access denied"
+        )
     return "This example takes MD5 and SHA1 file hashes via a web API and return the results from TIE over DXL.  Written by Scott Brumley Intel Security"
 ##### End About #####
 
 ##### TIE #####
 @app.route('/tie')
 def tie():
+    if request.args.get('token'):
+        myToken = request.args.get('token')
+
+    if not authenticate(myToken):
+        return jsonify(
+            access = "access denied"
+        )
     return "Path needs to be /service/action"
 ##### END TIE #####
 
@@ -204,6 +218,12 @@ def getFileProps(myReturnVal):
 
     return propList
 
+def authenticate(token):
+    if token == "27612211994137900087":
+        return True
+    else:
+        return False
+
 ### TIE GET FILE REP with MD5 hash
 @app.route('/tie/getfile/')
 def getFileRep():
@@ -211,6 +231,7 @@ def getFileRep():
     md5 = None
     sha1 = None
     sha256 = None
+    myToken = None
 
     if request.args.get('md5'):
         md5 = request.args.get('md5')
@@ -220,6 +241,13 @@ def getFileRep():
         json = request.args.get('json')
     if request.args.get('sha256'):
         sha256 = request.args.get('sha256')
+    if request.args.get('token'):
+        myToken = request.args.get('token')
+
+    if not authenticate(myToken):
+        return jsonify(
+            access = "access denied"
+        )
 
     if md5 == None and sha1 == None and sha256 == None:
         return jsonify(
@@ -305,6 +333,14 @@ def setTieRep():
     if request.args.get('trustlevel'):
         trustlevelStr = request.args.get('trustlevel')
 
+    if request.args.get('token'):
+        myToken = request.args.get('token')
+
+    if not authenticate(myToken):
+        return jsonify(
+            access = "access denied"
+        )
+
     trustlevelInt = getTrustLevel(trustlevelStr)
 
     if md5 == None and sha1 == None and sha256 == None:
@@ -366,8 +402,27 @@ def setTieRep():
 
 ### Default API
 @app.route('/')
-def hello_world():
+def root_path():
+    if request.args.get('token'):
+        myToken = request.args.get('token')
+
+    if not authenticate(myToken):
+        return jsonify(
+            access = "access denied"
+        )
     return 'This is for authorized personnel only.  Go away!'
+
+### Test Page
+@app.route('/ping')
+def ping():
+    if request.args.get('token'):
+        myToken = request.args.get('token')
+
+    if not authenticate(myToken):
+        return jsonify(
+            access = "access denied"
+        )
+    return 'pong'
 
 if __name__ == '__main__':
     app.run()
