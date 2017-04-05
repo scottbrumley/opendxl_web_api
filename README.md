@@ -22,12 +22,6 @@ The OpenDXL Web API was designed to allow the building of a scalable web tier.  
 ## Architecture
 ![Web API](docs/images/webapi.jpg)
 
-## TAXONOMY Of API
-
-Taxonomy of the API is documented in the taxonomy documentaiton.  This highlights how the web api paths are structured and how it should be going forward.
-
-[Taxonomy Documentation](docs/taxonomy.md)
-
 ## Build and Deploy Project
 
 How to perform the automated build for this project.  As well as how to deploy the code into a remote production system or test system.
@@ -43,6 +37,12 @@ How to perform the automated build for this project.  As well as how to deploy t
 
 #### Configuration Example
 [FireEye Notification Configuration](docs/fireeye.md)
+
+## TAXONOMY Of API
+
+Taxonomy of the API is documented in the taxonomy documentaiton.  This highlights how the web api paths are structured and how it should be going forward.
+
+[Taxonomy Documentation](docs/taxonomy.md)
 
 ## McAfee Trust Level Defined
 [McAfee Trust Levels](docs/trustlevels.md)
