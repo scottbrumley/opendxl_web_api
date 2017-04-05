@@ -28,15 +28,6 @@ How to perform the automated build for this project.  As well as how to deploy t
 
 [Build / Run Documentation](docs/build.md)
 
-## Cuckoo
-
-#### Configuration Examples
-[Cuckoo Notification Configuration](docs/cuckoo.md)
-
-## FireEye
-
-#### Configuration Example
-[FireEye Notification Configuration](docs/fireeye.md)
 
 ## TAXONOMY Of API
 
@@ -46,6 +37,18 @@ Taxonomy of the API is documented in the taxonomy documentaiton.  This highlight
 
 ## McAfee Trust Level Defined
 [McAfee Trust Levels](docs/trustlevels.md)
+
+## Vendor Support
+# Cuckoo
+
+#### Configuration Examples
+[Cuckoo Notification Configuration](docs/cuckoo.md)
+
+# FireEye
+
+#### Configuration Example
+[FireEye Notification Configuration](docs/fireeye.md)
+
 
 ## LICENSE
 Copyright 2017 McAfee, Inc.
