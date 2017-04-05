@@ -31,7 +31,7 @@ How to perform the automated build for this project.  As well as how to deploy t
 
 ## TAXONOMY Of API
 
-Taxonomy of the API is documented in the taxonomy documentaiton.  This highlights how the web api paths are structured and how it should be going forward.
+Taxonomy of the API is documented in the taxonomy documentation.  This highlights how the web api paths are structured and how it should be going forward.
 
 [Taxonomy Documentation](docs/taxonomy.md)
 
