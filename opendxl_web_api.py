@@ -427,8 +427,6 @@ def setFireEyeTieRep(myToken):
     for item in content['alert']:
         md5 = item['explanation']['malware-detected']['malware']['md5sum']
         filenameStr = item['explanation']['malware-detected']['malware']['original']
-        print md5
-        print filenameStr
 
     if md5 != "":
         if not is_md5(md5):
