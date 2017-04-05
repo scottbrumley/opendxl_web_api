@@ -308,97 +308,100 @@ def getTrustLevel(trustlevelStr):
     return -1
 
 ### TIE SET FILE REP
-@app.route('/tie/setfile/')
+@app.route('/tie/setfile/', methods = ['GET', 'POST'])
 def setTieRep():
-    json = "false"
-    md5 = ""
-    sha1 = ""
-    sha256 = ""
-    filenameStr = ""
-    trustLevelStr = ""
-    commentStr = "Reputation set via OpenDXL"
+    if request.method == 'GET':
+        json = "false"
+        md5 = ""
+        sha1 = ""
+        sha256 = ""
+        filenameStr = ""
+        trustLevelStr = ""
+        commentStr = "Reputation set via OpenDXL"
 
-    if request.args.get('md5'):
-        md5 = request.args.get('md5')
-    if request.args.get('sha1'):
-        sha1 = request.args.get('sha1')
-    if request.args.get('json'):
-        json = request.args.get('json')
-    if request.args.get('sha256'):
-        sha256 = request.args.get('sha256')
-    if request.args.get('filename'):
-        filenameStr = request.args.get('filename')
-    if request.args.get('comment'):
-        commentStr = request.args.get('comment')
-    if request.args.get('trustlevel'):
-        trustlevelStr = request.args.get('trustlevel')
+        if request.args.get('md5'):
+            md5 = request.args.get('md5')
+        if request.args.get('sha1'):
+            sha1 = request.args.get('sha1')
+        if request.args.get('json'):
+            json = request.args.get('json')
+        if request.args.get('sha256'):
+            sha256 = request.args.get('sha256')
+        if request.args.get('filename'):
+            filenameStr = request.args.get('filename')
+        if request.args.get('comment'):
+            commentStr = request.args.get('comment')
+        if request.args.get('trustlevel'):
+            trustlevelStr = request.args.get('trustlevel')
 
-    if request.args.get('token'):
-        myToken = request.args.get('token')
+        if request.args.get('token'):
+            myToken = request.args.get('token')
 
-    if not authenticate(myToken):
-        return jsonify(
-            access = "access denied"
-        )
-
-    trustlevelInt = getTrustLevel(trustlevelStr)
-
-    if md5 == None and sha1 == None and sha256 == None:
-        return jsonify(
-            error= "no file hash"
-        )
-    else:
-        ### Verify SHA1 string
-        if sha1 != "":
-            if not is_sha1(sha1):
-                return jsonify(
-                    error= "invalid sha1"
-                )
-
-        ### Verify SHA256 string
-        if sha256 != "":
-            if not is_sha256(sha256):
-                return jsonify(
-                    error= "invalid sha256"
-                )
-
-        if md5 != "":
-            if not is_md5(md5):
-                return jsonify(
-                    error= "invalid md5"
-                )
-
-    # Create the client
-    with DxlClient(config) as client:
-
-        # Connect to the fabric
-        client.connect()
-
-        # Create the McAfee Threat Intelligence Exchange (TIE) client
-        tie_client = TieClient(client)
-
-        if trustlevelInt != -1:
-            # Set the Enterprise reputation for notepad.exe to Known Trusted
-            tie_client.set_file_reputation(
-                trustlevelInt , {
-                    HashType.MD5: md5,
-                    HashType.SHA1: sha1,
-                    HashType.SHA256: sha256
-                },
-                filename=filenameStr,
-                comment=commentStr)
-        else:
+        if not authenticate(myToken):
             return jsonify(
-                error = "invalid trust level",
-                trustlevel = trustlevelStr
+                access = "access denied"
             )
 
-    if json == "true":
-        return jsonify(
-            status=trustlevelStr
-        )
-    else:
-        return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, status=trustlevelStr, filename=filenameStr, comment=commentStr, action="setfile",json=json)
+        trustlevelInt = getTrustLevel(trustlevelStr)
+
+        if md5 == None and sha1 == None and sha256 == None:
+            return jsonify(
+                error= "no file hash"
+            )
+        else:
+            ### Verify SHA1 string
+            if sha1 != "":
+                if not is_sha1(sha1):
+                    return jsonify(
+                        error= "invalid sha1"
+                    )
+
+            ### Verify SHA256 string
+            if sha256 != "":
+                if not is_sha256(sha256):
+                    return jsonify(
+                        error= "invalid sha256"
+                    )
+
+            if md5 != "":
+                if not is_md5(md5):
+                    return jsonify(
+                        error= "invalid md5"
+                    )
+
+        # Create the client
+        with DxlClient(config) as client:
+
+            # Connect to the fabric
+            client.connect()
+
+            # Create the McAfee Threat Intelligence Exchange (TIE) client
+            tie_client = TieClient(client)
+
+            if trustlevelInt != -1:
+                # Set the Enterprise reputation for notepad.exe to Known Trusted
+                tie_client.set_file_reputation(
+                    trustlevelInt , {
+                        HashType.MD5: md5,
+                        HashType.SHA1: sha1,
+                        HashType.SHA256: sha256
+                    },
+                    filename=filenameStr,
+                    comment=commentStr)
+            else:
+                return jsonify(
+                    error = "invalid trust level",
+                    trustlevel = trustlevelStr
+                )
+
+        if json == "true":
+            return jsonify(
+                status=trustlevelStr
+            )
+        else:
+            return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, status=trustlevelStr, filename=filenameStr, comment=commentStr, action="setfile",json=json)
+    if request.method == 'POST':
+        data = request.form
 
 ### Default API
 @app.route('/')
