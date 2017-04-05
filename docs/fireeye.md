@@ -22,26 +22,72 @@
 
 ### Fireeye JSON example
 ```
-{"msg": "extended", "product": "Web MPS", "version":
-"7.0.0.138133","appliance": "WebMPS.localdomain", "alert":
-{"src": {"mac":"XX:XX:XX:XX:XX:XX", "ip": "169.250.0.1",
-"host": "NA-testing.fe-notify-examples.com", "vlan": "0",
-"port": "10"}, "severity": "majr", "alert- url": "https://
-WebMPS.localdomain/event_stream/events_for_bot?inc_id=1",
-"explanation": {"target-os": "WindowsXYZ", "protocol": "tcp",
-"service": "FireEye-TestEvent EA Service", "analysis":
-"replay", "cnc-services": {"cnc- service": [{"protocol":
-"tcp", "port": "200", "channel": "FireEye-TestEvent Channel
-1", "address": "FireEye-TestEvent.example.com"}, {"protocol":
-"tcp", "port": "201", "channel": "cncs 2 channel
-fields", "address": "127.0.0.100"}]}, "target-application":
-"IEx123", "urls": "2", "malware- detected": {"malware":
-[{"content": "lms-0/contents", "url": "compl_0_1- someurl.
-x1y2z3.com", "type": "link", "name": "Suspicious.URL"},
-{"content": "lms-0/contents", "url": "os-change-anomaly_0_1-
-someurl.x1y2z3.com", "type":"link", "name": "Suspicious.URL"},
-{"objurl": "compl_0_1-someurl.x1y2z3.com", "name": "FireEyeTestEvent-SIG"}]}},
-"occurred": "2014-04-13T21:02:48Z","id":
-"1", "action": "notified", "dst": {"ip": "127.0.0.20",
-"mac":"XX:XX:XX:XX:XX:XX", "port": "20"}, "name": "webinfection"}}
+{"msg": "extended", "product": "Web MPS", "version":"7.0.0.138133","appliance": "WebMPS.localdomain", "alert":{"src": {"mac":"XX:XX:XX:XX:XX:XX", "ip": "169.250.0.1","host": "NA-testing.fe-notify-examples.com", "vlan": "0","port": "10"}, "severity": "majr", "alert- url": "https://WebMPS.localdomain/event_stream/events_for_bot?inc_id=1","explanation": {"target-os": "WindowsXYZ", "protocol": "tcp","service": "FireEye-TestEvent EA Service", "analysis":"replay", "cnc-services": {"cnc- service": [{"protocol":"tcp", "port": "200", "channel": "FireEye-TestEvent Channel1", "address": "FireEye-TestEvent.example.com"}, {"protocol":"tcp", "port": "201", "channel": "cncs 2 channelfields", "address": "127.0.0.100"}]}, "target-application":"IEx123", "urls": "2", "malware- detected": {"malware":[{"content": "lms-0/contents", "url": "compl_0_1- someurl.x1y2z3.com", "type": "link", "name": "Suspicious.URL"},{"content": "lms-0/contents", "url": "os-change-anomaly_0_1-someurl.x1y2z3.com", "type":"link", "name": "Suspicious.URL"},{"objurl": "compl_0_1-someurl.x1y2z3.com", "name": "FireEyeTestEvent-SIG"}]}},"occurred": "2014-04-13T21:02:48Z","id":"1", "action": "notified", "dst": {"ip": "127.0.0.20","mac":"XX:XX:XX:XX:XX:XX", "port": "20"}, "name": "webinfection"}}
+
+or 
+
+{
+	"msg": "extended",
+	"product": "Web MPS",
+	"version": "7.0.0.138133",
+	"appliance": "WebMPS.localdomain",
+	"alert": {
+		"src": {
+			"mac": "XX:XX:XX:XX:XX:XX",
+			"ip": "169.250.0.1",
+			"host": "NA-testing.fe-notify-examples.com",
+			"vlan": "0",
+			"port": "10"
+		},
+		"severity": "majr",
+		"alert- url": "https://WebMPS.localdomain/event_stream/events_for_bot?inc_id=1",
+		"explanation": {
+			"target-os": "WindowsXYZ",
+			"protocol": "tcp",
+			"service": "FireEye-TestEvent EA Service",
+			"analysis": "replay",
+			"cnc-services": {
+				"cnc- service": [{
+					"protocol": "tcp",
+					"port": "200",
+					"channel": "FireEye-TestEvent Channel1",
+					"address": "FireEye-TestEvent.example.com"
+				}, {
+					"protocol": "tcp",
+					"port": "201",
+					"channel": "cncs 2 channelfields",
+					"address": "127.0.0.100"
+				}]
+			},
+			"target-application": "IEx123",
+			"urls": "2",
+			"malware- detected": {
+				"malware": [{
+					"content": "lms-0/contents",
+					"url": "compl_0_1- someurl.x1y2z3.com",
+					"type": "link",
+					"name": "Suspicious.URL"
+				}, {
+					"content": "lms-0/contents",
+					"url": "os-change-anomaly_0_1-someurl.x1y2z3.com",
+					"type": "link",
+					"name": "Suspicious.URL"
+				}, {
+					"objurl": "compl_0_1-someurl.x1y2z3.com",
+					"name": "FireEyeTestEvent-SIG"
+				}]
+			}
+		},
+		"occurred": "2014-04-13T21:02:48Z",
+		"id": "1",
+		"action": "notified",
+		"dst": {
+			"ip": "127.0.0.20",
+			"mac": "XX:XX:XX:XX:XX:XX",
+			"port": "20"
+		},
+		"name": "webinfection"
+	}
+}
+
 ```
