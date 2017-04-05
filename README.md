@@ -38,6 +38,9 @@ The OpenDXL Web API was designed to allow the building of a scalable web tier.  
 * Scalable Web API Tier
 * Automated Build Development Environment
 * Automated Deployment
+* Set TIE file Reputation from HTTP
+* Get TIE file Reputation from HTTP
+* Set TIE file Reputation from FireEye Notification
 
 ## Build Development Environment / Deploy To Production
 
