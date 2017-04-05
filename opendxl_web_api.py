@@ -39,6 +39,7 @@ logger = logging.getLogger()
 logger.addHandler(console_handler)
 logger.setLevel(logging.INFO)
 
+## DXL Client Configuration
 CONFIG_FILE_NAME = "/vagrant/dxlclient.config"
 
 # The topic for requesting file reputations
@@ -184,6 +185,7 @@ def is_md5(maybe_md5):
         return False
     return True
 
+## Get File Properties and Map with Providers and TIE Score
 def getFileProps(myReturnVal):
     fileProps = myReturnVal
     propList = []
@@ -218,6 +220,7 @@ def getFileProps(myReturnVal):
 
     return propList
 
+## Test for correct Authentication Token
 def authenticate(token):
     if token == "27612211994137900087":
         return True
@@ -285,6 +288,7 @@ def getFileRep():
         else:
             return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, propList=propList,action="getfile",json=json)
 
+## Map McAfee Trust Level from trustlevel string provided
 def getTrustLevel(trustlevelStr):
     trustlevelStr = trustlevelStr.lower()
     if trustlevelStr == 'known_trusted':
@@ -307,6 +311,7 @@ def getTrustLevel(trustlevelStr):
         return TrustLevel.NOT_SET
     return -1
 
+## Set the TIE reputation of a file via MD5, SHA1, or SHA256 hash
 def setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr):
     trustlevelInt = getTrustLevel(trustlevelStr)
 
