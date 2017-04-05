@@ -39,9 +39,6 @@ How to perform the automated build for this project.  As well as how to deploy t
 #### Configuration Examples
 [Cuckoo Notification Configuration](docs/cuckoo.md)
 
-#### Cuckoo Flow
-![Cuckoo Flow01](docs/images/cuckoo01.jpg)
-
 ## FireEye
 
 #### Configuration Example
