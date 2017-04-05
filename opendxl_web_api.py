@@ -410,27 +410,13 @@ def setTieRep():
 ### TIE SET FILE REP
 @app.route('/tie/fireeye/setfile/<myToken>', methods = ['GET','POST'])
 def setFireEyeTieRep(myToken):
-#        md5 = ""
-#        sha1 = ""
-#        sha256 = ""
-#        filenameStr = ""
-#        trustLevelStr = ""
-#        commentStr = "Reputation set via OpenDXL"
+    md5 = ""
+    sha1 = ""
+    sha256 = ""
+    commentStr = "Reputation set from FireEye via OpenDXL"
+    filenameStr = ""
+    trustlevelStr = "known_malicious"
 
-#        if request.args.get('md5'):
-#            md5 = request.args.get('md5')
-#        if request.args.get('sha1'):
-#            sha1 = request.args.get('sha1')
-#        if request.args.get('json'):
-#            json = request.args.get('json')
-#        if request.args.get('sha256'):
-#            sha256 = request.args.get('sha256')
-#        if request.args.get('filename'):
-#            filenameStr = request.args.get('filename')
-#        if request.args.get('comment'):
-#            commentStr = request.args.get('comment')
-#        if request.args.get('trustlevel'):
-#            trustlevelStr = request.args.get('trustlevel')
 
     if not authenticate(myToken):
         return jsonify(
@@ -438,18 +424,19 @@ def setFireEyeTieRep(myToken):
         )
 
     content = request.json
-    print content['product']
+    for item in content['alert']:
+        md5 = item['explanation']['malware-detected']['malware']['md5sum']
+        filenameStr = item['explanation']['malware-detected']['malware']['original']
+        print md5
+        print filenameStr
 
-#        data = request.form
+    if md5 != "":
+        if not is_md5(md5):
+            return jsonify(
+                error= "invalid md5"
+            )
 
-#        setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr)
-
-#        if json == "true":
-#            return jsonify(
-#                status=trustlevelStr
-#            )
-#        else:
-#            return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, status=trustlevelStr, filename=filenameStr, comment=commentStr, action="setfile",json=json)
+        setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr)
     return jsonify(request.json)
 
 ### Default API
