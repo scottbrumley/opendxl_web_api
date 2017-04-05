@@ -33,13 +33,21 @@ How to perform the automated build for this project.  As well as how to deploy t
 
 [Build / Run Documentation](docs/build.md)
 
-## Cuckoo Flow
+## Vendor Support
+
+### Cuckoo
 
 #### Configuration Examples
-[Cuckoo Post Processing Configuration](docs/cuckoo.md)
+[Cuckoo Notification Configuration](docs/cuckoo.md)
 
 #### Cuckoo Flow
 ![Cuckoo Flow01](docs/images/cuckoo01.jpg)
+
+
+### FireEye
+
+#### Configuration Example
+[FireEye Notification Configuration](docs/fireeye.md)
 
 ## LICENSE
 Copyright 2017 McAfee, Inc.
