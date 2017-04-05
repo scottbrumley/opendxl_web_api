@@ -412,7 +412,7 @@ def setTieRep():
     if request.method == 'POST':
         data = request.form
 
-### TIE SET FILE REP
+### FIREEYE TIE SET FILE REP
 @app.route('/tie/fireeye/setfile/<myToken>', methods = ['GET','POST'])
 def setFireEyeTieRep(myToken):
     md5 = ""
