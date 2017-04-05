@@ -27,3 +27,6 @@ http://127.0.0.1:5000/tie/setfile/?sha1=D4186881780D48BF55D4D59171B115634E3C7BA6
 * filename (optional) - The file name of the file analyzed
 * comment (optional) - Comment to place in ePO
 * trustlevel - File reputation
+
+#### Cuckoo Flow
+![Cuckoo Flow01](images/cuckoo01.jpg)
