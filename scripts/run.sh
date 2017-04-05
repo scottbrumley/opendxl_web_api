@@ -10,7 +10,7 @@ fi
 function start {
     echo "Running Flask ..."
     FLASK_APP="/vagrant/opendxl_web_api.py"
-    /usr/local/bin/flask run --host=0.0.0.0&
+    /usr/local/bin/flask run --host=0.0.0.0 --port=${FLASK_PORT}&
     FLASK_PID="$!"
     echo "FLASK_PID=${FLASK_PID}" > "${FLASK_PID_FILE}"
     sleep 5
