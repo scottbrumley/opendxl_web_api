@@ -8,7 +8,7 @@ function test_http_code {
     TEST_NAME="HTTP CODE 200"
     echo "#### TEST: ${TEST_NAME} ####"
     echo "     Testing ${TEST_URL}/about ####"
-    HTTP_CODE=$(sudo wget --spider -O - -S "${TEST_URL}/about&token=${FLASK_TOKEN}" 2>&1 | grep "HTTP/" | awk '{print $2}')
+    HTTP_CODE=$(sudo wget --spider -O - -S "${TEST_URL}/about?token=${FLASK_TOKEN}" 2>&1 | grep "HTTP/" | awk '{print $2}')
     if [[ ${HTTP_CODE} == "200" ]]; then
         echo "TEST SUCCESS: ${TEST_NAME}"
     else
