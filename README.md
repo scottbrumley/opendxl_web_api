@@ -19,6 +19,7 @@ The OpenDXL Web API was designed to allow the building of a scalable web tier.  
 * **Wrapper Services**
     While building a wrapper is a fine work around, it creates an operational challenge because it has to be maintained in tandem to the code being wrapped.  These types of services are easily forgotten upon upgrades.  Specifically to creater of Cuckoo said please do not create wrapper.
 
+## Architecture
 ![Web API](docs/images/webapi.jpg)
 
 ## TAXONOMY Of API
