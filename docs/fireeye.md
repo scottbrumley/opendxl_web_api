@@ -17,7 +17,7 @@
 ### URL: http://opendxlapi:5000/setfile?token=<your token>
 
 
-![fireeye configuration](docs/images/fireeye-splunk.jpg)   
+![fireeye configuration](images/fireeye-splunk.jpg)   
 
 
 ### Fireeye JSON example
