@@ -3,6 +3,7 @@
 FLASK_PID_FILE="/tmp/flask_pid"
 
 if [ -f ${FLASK_PID_FILE} ]; then
+    echo "${FLASK_PID_FILE} exists"
     source ${FLASK_PID_FILE}
 fi
 
