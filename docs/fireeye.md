@@ -1,4 +1,4 @@
-# Fireeye Configuration
+# FireEye Configuration
 
 ##Send JSON using HTTP POST
 
@@ -19,6 +19,14 @@
 
 ![fireeye configuration](images/fireeye-splunk.jpg)   
 
+### Curl Example
+curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d @fireeye.json http://127.0.0.1:5000/tie/fireeye/setfile/<security token>
+
+### Values Sent to TIE
+* MD5 File Hash
+* File Name of analysised file
+* Comment 
+* Trust Level known_malicious
 
 ### Fireeye JSON example
 ```
