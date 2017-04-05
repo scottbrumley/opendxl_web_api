@@ -20,7 +20,24 @@ The OpenDXL Web API was designed to allow the building of a scalable web tier.  
     While building a wrapper is a fine work around, it creates an operational challenge because it has to be maintained in tandem to the code being wrapped.  These types of services are easily forgotten upon upgrades.  Specifically to creater of Cuckoo said please do not create wrapper.
 
 ## Architecture
-![Web API](docs/images/webapi.jpg)
+![Web API](docs/images/webapi.png)
+
+### Horizontal Scaling Criteria
+* **Scalable** - Ability to add new instances of this project to increase performance.
+* **Composable** - resources are logically pooled so administrators do not have to physically configure hardware.
+* **Autonomous** - The project code should be able to stand on its own without dependencies
+
+## Use Cases
+* Cuckoo set TIE reputation
+* FireEye set TIE reputation
+* Generic set TIE reputation
+* Generic get TIE reputation
+
+## Features
+* Token Authentication
+* Scalable Web API Tier
+* Automated Build Development Environment
+* Automated Deployment
 
 ## Build Development Environment / Deploy To Production
 
@@ -28,6 +45,8 @@ How to perform the automated build for this project.  As well as how to deploy t
 
 [Build / Run Documentation](docs/build.md)
 
+## SSL Encryption
+The best way to enable SSL encryption is through an external load balancers (nginx, haproxy, Netscalers, or f5).  The load balancer can terminate the SSL encryption from the client.  This allows the backend to remain free and comnposable.
 
 ## TAXONOMY Of API
 
