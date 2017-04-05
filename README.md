@@ -35,22 +35,22 @@ Taxonomy of the API is documented in the taxonomy documentation.  This highlight
 
 [Taxonomy Documentation](docs/taxonomy.md)
 
-## McAfee Trust Level Defined
+### McAfee Trust Level Defined
 [McAfee Trust Levels](docs/trustlevels.md)
 
 ## Vendor Support
-# Cuckoo
+### Cuckoo
 
 #### Configuration Examples
 [Cuckoo Notification Configuration](docs/cuckoo.md)
 
-# FireEye
+### FireEye
 
 #### Configuration Example
 [FireEye Notification Configuration](docs/fireeye.md)
 
 
-## LICENSE
+### LICENSE
 Copyright 2017 McAfee, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
