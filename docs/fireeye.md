@@ -22,72 +22,67 @@
 
 ### Fireeye JSON example
 ```
-{"msg": "extended", "product": "Web MPS", "version":"7.0.0.138133","appliance": "WebMPS.localdomain", "alert":{"src": {"mac":"XX:XX:XX:XX:XX:XX", "ip": "169.250.0.1","host": "NA-testing.fe-notify-examples.com", "vlan": "0","port": "10"}, "severity": "majr", "alert- url": "https://WebMPS.localdomain/event_stream/events_for_bot?inc_id=1","explanation": {"target-os": "WindowsXYZ", "protocol": "tcp","service": "FireEye-TestEvent EA Service", "analysis":"replay", "cnc-services": {"cnc- service": [{"protocol":"tcp", "port": "200", "channel": "FireEye-TestEvent Channel1", "address": "FireEye-TestEvent.example.com"}, {"protocol":"tcp", "port": "201", "channel": "cncs 2 channelfields", "address": "127.0.0.100"}]}, "target-application":"IEx123", "urls": "2", "malware- detected": {"malware":[{"content": "lms-0/contents", "url": "compl_0_1- someurl.x1y2z3.com", "type": "link", "name": "Suspicious.URL"},{"content": "lms-0/contents", "url": "os-change-anomaly_0_1-someurl.x1y2z3.com", "type":"link", "name": "Suspicious.URL"},{"objurl": "compl_0_1-someurl.x1y2z3.com", "name": "FireEyeTestEvent-SIG"}]}},"occurred": "2014-04-13T21:02:48Z","id":"1", "action": "notified", "dst": {"ip": "127.0.0.20","mac":"XX:XX:XX:XX:XX:XX", "port": "20"}, "name": "webinfection"}}
-
-or 
-
+{"msg": "extended", "product": "Web MPS", "version": "7.7.0.123456", "appliance": "fireeye.foo.bar", "appliance-id": "00:11:11:11:11:11",
+"alert": [
 {
-	"msg": "extended",
-	"product": "Web MPS",
-	"version": "7.0.0.138133",
-	"appliance": "WebMPS.localdomain",
-	"alert": {
-		"src": {
-			"mac": "XX:XX:XX:XX:XX:XX",
-			"ip": "169.250.0.1",
-			"host": "NA-testing.fe-notify-examples.com",
-			"vlan": "0",
-			"port": "10"
-		},
-		"severity": "majr",
-		"alert- url": "https://WebMPS.localdomain/event_stream/events_for_bot?inc_id=1",
-		"explanation": {
-			"target-os": "WindowsXYZ",
-			"protocol": "tcp",
-			"service": "FireEye-TestEvent EA Service",
-			"analysis": "replay",
-			"cnc-services": {
-				"cnc- service": [{
-					"protocol": "tcp",
-					"port": "200",
-					"channel": "FireEye-TestEvent Channel1",
-					"address": "FireEye-TestEvent.example.com"
-				}, {
-					"protocol": "tcp",
-					"port": "201",
-					"channel": "cncs 2 channelfields",
-					"address": "127.0.0.100"
-				}]
-			},
-			"target-application": "IEx123",
-			"urls": "2",
-			"malware- detected": {
-				"malware": [{
-					"content": "lms-0/contents",
-					"url": "compl_0_1- someurl.x1y2z3.com",
-					"type": "link",
-					"name": "Suspicious.URL"
-				}, {
-					"content": "lms-0/contents",
-					"url": "os-change-anomaly_0_1-someurl.x1y2z3.com",
-					"type": "link",
-					"name": "Suspicious.URL"
-				}, {
-					"objurl": "compl_0_1-someurl.x1y2z3.com",
-					"name": "FireEyeTestEvent-SIG"
-				}]
-			}
-		},
-		"occurred": "2014-04-13T21:02:48Z",
-		"id": "1",
-		"action": "notified",
-		"dst": {
-			"ip": "127.0.0.20",
-			"mac": "XX:XX:XX:XX:XX:XX",
-			"port": "20"
-		},
-		"name": "webinfection"
-	}
-}
-
+  "src": {
+    "ip": "10.1.2.3",
+    "host": "internalclient.intra.net",
+    "vlan": "0", 
+    "mac": "00:24:aa:aa:aa:aa"
+  }, 
+  "severity": "minr", 
+  "alert-url": "https://fireeye.foo.bar/event_stream/events_for_bot?ma_id=12345678",
+  "explanation": {
+    "malware-detected": {
+      "malware": {
+        "profile": "win7x64-sp1", 
+        "http-header": "POST http://malicious.com",
+        "name": "Misc.Eicar-Test-File",
+        "md5sum": "44d88612fea8a8f36de82e1278abb02f",
+        "executed-at": "2016-01-19T08:30:21Z", 
+        "application": "Windows Explorer", 
+        "type": "exe", 
+        "original": "driver.exe",
+        "stype": "24"
+      }
+    },
+    "protocol": "", 
+    "analysis": "binary",
+    "cnc-services": {
+      "cnc-service": [
+        {
+          "protocol": "tcp",
+          "port": "4143",
+          "channel": "\\\\026\\\\003\\\\001",
+          "address": "198.50.234.211"
+        },
+        {
+          "protocol": "tcp",
+          "port": "9943",
+          "channel": "\\\\026\\\\003\\\\001",
+          "address": "80.96.150.201"
+        },
+        {
+          "protocol": "tcp",
+          "port": "4493",
+          "channel": "\\\\026\\\\003\\\\001",
+          "address": "1.179.170.7"
+        }
+      ]
+    },
+    "anomaly": "98816"
+  }, 
+  "occurred": "2016-01-20 09:30:21+00", 
+  "id": "12345678",
+  "action": "notified", 
+  "interface": {
+    "mode": "tap"
+  }, 
+  "dst": {
+    "ip": "10.1.2.4",
+    "mac": "00:24:bb:bb:bb:bb"
+  }, 
+  "name": "malware-object"
+}]}
 ```
