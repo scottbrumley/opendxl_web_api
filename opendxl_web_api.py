@@ -16,6 +16,10 @@ from dxlclient.client import DxlClient
 from dxlclient.client_config import DxlClientConfig
 from dxlclient.message import Message, Request
 
+from dxlmarclient import MarClient
+
+from dxlepoclient import EpoClient, OutputFormat
+
 from dxltieclient import TieClient
 from dxltieclient.constants import HashType, TrustLevel, FileProvider, ReputationProp, CertProvider, CertReputationProp, CertReputationOverriddenProp
 
@@ -441,6 +445,79 @@ def setFireEyeTieRep(myToken):
 
         setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr)
     return jsonify(request.json)
+
+### Get ePO System Information
+@app.route('/epo/getsystem/')
+def getSystem():
+    # The ePO unique identifier
+    EPO_UNIQUE_ID = None
+
+    # The search text
+    if request.args.get('query'):
+        SEARCH_TEXT = request.args.get('query')
+    if request.args.get('token'):
+        myToken = request.args.get('token')
+
+    if not authenticate(myToken):
+        return jsonify(
+            access = "access denied"
+        )
+
+    # Create the client
+    with DxlClient(config) as client:
+
+        # Connect to the fabric
+        client.connect()
+
+        # Create the ePO client
+        epo_client = EpoClient(client, EPO_UNIQUE_ID)
+
+        # Run the system find command
+        res = epo_client.run_command("system.find",
+                                     {"searchText": SEARCH_TEXT},
+                                     output_format=OutputFormat.JSON)
+
+        # Load find result into dictionary
+        res_dict = json.loads(res, encoding='utf-8')
+
+        # Display the results
+        return json.dumps(res_dict, sort_keys=True, indent=4, separators=(',', ': '))
+
+@app.route('/mar/getclients/')
+def getMARClients():
+
+    if request.args.get('token'):
+        myToken = request.args.get('token')
+
+    if not authenticate(myToken):
+        return jsonify(
+            access = "access denied"
+        )
+
+    ### Create the client
+    with DxlClient(config) as client:
+
+        # Connect to the fabric
+        client.connect()
+
+        # Create the McAfee Active Response (MAR) client
+        mar_client = MarClient(client)
+
+        # Performs the search
+        result_context = \
+            mar_client.search(
+                projections=[{
+                    "name": "HostInfo",
+                    "outputs": ["ip_address"]
+                }]
+            )
+
+        # Loop and display the results
+        if result_context.has_results:
+            search_result = result_context.get_results(limit=10)
+            print "Results:"
+            for item in search_result["items"]:
+                print "    " + item["output"]['HostInfo|ip_address']
 
 ### Default API
 @app.route('/')

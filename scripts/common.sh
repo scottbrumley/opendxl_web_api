@@ -66,8 +66,17 @@ function installOpenDXLTIEClient {
     sudo python setup.py install
 }
 
-function installMARClient {
+function installePOClient {
     ### Install Open DXL TIE Client
+    echo "Installing Open DXL ePO Client"
+    cd /vagrant
+    sudo git clone https://github.com/opendxl/opendxl-epo-client-python.git
+    cd /vagrant/opendxl-epo-client-python
+    sudo python setup.py install
+}
+
+function installMARClient {
+    ### Install Open DXL MAR Client
     echo "Installing Open DXL TIE Client"
     cd /vagrant
     sudo git clone https://github.com/opendxl/opendxl-mar-client-python.git
