@@ -13,6 +13,7 @@ installPip
 installPythonCommon
 installOpenDXLClient
 installOpenDXLTIEClient
+installMARClient
 installePOClient
 installOpenSSL
 buildCertsFolders
