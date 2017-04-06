@@ -17,3 +17,6 @@ installePOClient
 installOpenSSL
 buildCertsFolders
 installFlask
+
+## Setup Flask Environment
+sudo echo 'export FLASK_APP=/vagrant/opendxl_web_api.py' >> /etc/bash.bashrc

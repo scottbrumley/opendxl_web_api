@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-function installPython{
+function installPython {
     ### Install Python 2.7.9
     if [[ "${PY_VER}" =~ "${REQ_PY_VER}" ]]; then
         echo "Already Version ${REQ_PY_VER}"
@@ -96,5 +96,4 @@ function buildCertsFolders {
 function installFlask {
     ## Setup Flask
     sudo pip install Flask
-    sudo echo 'export FLASK_APP=/vagrant/opendxl_web_api.py' >> /etc/bash.bashrc
 }
