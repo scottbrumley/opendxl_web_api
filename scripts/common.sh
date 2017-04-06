@@ -66,15 +66,14 @@ function installOpenDXLTIEClient {
     sudo python setup.py install
 }
 
-function installePOClient {
-    ### Install ePO Client
-    echo "Installing Open DXL ePO Client"
+function installMARClient {
+    ### Install Open DXL TIE Client
+    echo "Installing Open DXL TIE Client"
     cd /vagrant
-    sudo git clone https://github.com/opendxl/opendxl-epo-client-python.git
-    cd /vagrant/opendxl-epo-client-python
+    sudo git clone https://github.com/opendxl/opendxl-mar-client-python.git
+    cd /vagrant/opendxl-mar-client-python
     sudo python setup.py install
 }
-
 function installOpenSSL {
     ### Check OpenSSL
     SSL_VER=$(python -c 'import ssl; print(ssl.OPENSSL_VERSION)')
