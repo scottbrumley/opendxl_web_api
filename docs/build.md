@@ -16,7 +16,11 @@
 * /vagrant/scripts/run.sh **start** (other options **stop** and **status**)
 
 ## Test
-* Connect http://127.0.0.1:5000/about to Test
+* Connect http://127.0.0.1:5000/about?token=<security token> to Test
+
+## Default Security Token
+**Please Change:**
+27612211994137900087
 
 # Deploy Into Production
 Future: Docker Machine Deployment
