@@ -508,7 +508,7 @@ def getMARClients():
             mar_client.search(
                 projections=[{
                     "name": "HostInfo",
-                    "outputs": ["ip_address"]
+                    "outputs": ["ip_address","os","hostname"]
                 }]
             )
 
@@ -518,6 +518,7 @@ def getMARClients():
             print "Results:"
             for item in search_result["items"]:
                 print "    " + item["output"]['HostInfo|ip_address']
+    return jsonify(search_result["items"])
 
 ### Default API
 @app.route('/')
