@@ -4,7 +4,8 @@
 * Put your broker certs in the brokercerts/ directory [Certificate Setup](./cert_setup.md)
 * Put your client certificates in the certs/ directory [Certificate Setup](./cert_setup.md)
 * Edit dxlclient.config and add your Broker(s)
-* Change DXL Topic Authorization: Set TIE Reputation to All Systems in ePO
+* Change DXL Topic Authorization: TIE Server Set Enterprise Reputation (send) to All Systems in ePO
+* Change DXL Topic Authorization: Active Response Server API (receive) to All Systems in ePO
 
 ## Automated Environment
 1. Download Vagrant https://www.vagrantup.com/downloads.html
