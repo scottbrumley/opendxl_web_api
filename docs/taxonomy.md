@@ -9,7 +9,7 @@
 * Your Remote box will be defined by you ```http://mycoolhost```
 
 ### TIE "Threat Intelligence Exchange"
-* **Set TIE** Reputation (HTTP GET)
+* **Set TIE** Reputation (HTTP GET) - Sets file reputation in TIE
 
     ```/tie/setfile```
       
@@ -19,9 +19,14 @@
     
     ```/tie/fireeye/setfile/<security token>```
 
-* **Get TIE** Reputation (HTTP GET)
+* **Get TIE** Reputation (HTTP GET) - Gets file reputation from TIE
 
     ```/tie/getfile```   
+
+### MAR "McAfee Active Response"
+* **Get MAR Clients** - Gets a list of all end points with MAR installed
+
+```http://127.0.0.1:5000/mar/getclients/?token=<security token>```
       
 ### Example URL   
 http://127.0.0.1:5000/tie/getfile?sha1=D4186881780D48BF55D4D59171B115634E3C7BA6&token=<security token>
