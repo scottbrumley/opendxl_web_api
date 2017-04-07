@@ -121,7 +121,7 @@ def about():
         return jsonify(
             access = "access denied"
         )
-    return "This example takes MD5 and SHA1 file hashes via a web API and return the results from TIE over DXL.  Written by Scott Brumley Intel Security"
+    return "Web API for OpenDXL.  Written by Scott Brumley McAfee"
 ##### End About #####
 
 ##### TIE #####
