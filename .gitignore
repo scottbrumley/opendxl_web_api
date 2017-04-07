@@ -137,6 +137,7 @@ ENV/
 opendxl-client-python
 opendxl-tie-client-python
 opendxl-epo-client-python
+opendxl-mar-client-python
 cuckoo
 .vagrant
 brokercerts/
