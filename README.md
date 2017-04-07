@@ -28,10 +28,10 @@ The OpenDXL Web API was designed to allow the building of a scalable web tier.  
 * **Autonomous** - The project code should be able to stand on its own without dependencies
 
 ## Use Cases
-* Cuckoo set TIE reputation
-* FireEye set TIE reputation
-* Generic set TIE reputation
-* Generic get TIE reputation
+* Cuckoo Notification set TIE reputation with GET request
+* FireEye Notification set set TIE reputation with POST JSON
+* Generic set TIE reputation with GET request
+* Generic get TIE reputation with GET request
 
 ## Features
 * Token Authentication
