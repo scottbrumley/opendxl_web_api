@@ -19,7 +19,7 @@
 * Connect http://127.0.0.1:5000/about to Test
 
 # Deploy Into Production
-Working on Docker Machine Deployment
+Future: Docker Machine Deployment
 
 ## More Documentation
 [Miscellaneous](misc.md)
