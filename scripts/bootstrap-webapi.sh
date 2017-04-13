@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 REQ_PY_VER="2.7.9"
 REQ_SSL_VER="1.0.1"
