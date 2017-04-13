@@ -15,7 +15,7 @@ Vagrant.configure(2) do |config|
                 #v.customize ["modifyvm", :id, "--hwvirtex", "off"]
                 #v.customize ["modifyvm", :id, "--vtxvpid", "off"]
                 #v.customize ["modifyvm", :id, "--vtxux", "off"]
-                v.gui = true  ## For Debugging VM
+                #v.gui = true  ## For Debugging VM
 
             end
         end
