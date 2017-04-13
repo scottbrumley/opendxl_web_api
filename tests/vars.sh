@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 BASEPROTO="http"
 BASEURL="127.0.0.1"

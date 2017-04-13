@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 vagrant destroy -f web
 #vagrant destroy -f cuckoo

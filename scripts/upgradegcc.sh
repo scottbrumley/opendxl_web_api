@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt-get update
 sudo apt-get install -y gcc-4.9 g++-4.9
