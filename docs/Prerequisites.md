@@ -12,8 +12,11 @@
 2. Run installer for Vagrant
 3. Download Virtualbox https://www.virtualbox.org/wiki/Downloads?replytocom=98578
 4. Run installer for Virtualbox
-3. Download Git https://git-scm.com/downloads
+5. Download Git https://git-scm.com/downloads
 
+### On Windows
+6. Start Menu --> cmd (shift + enter to go as Administrator)
+7. set PATH=%PATH%;c:\Program Files\Git\usr\bin
 
 ### Example dxlclient.config
 ```
