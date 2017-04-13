@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 FLASK_PID_FILE="/tmp/flask_pid"
 
