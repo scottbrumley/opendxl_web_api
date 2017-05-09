@@ -4,10 +4,10 @@
   "appliance": "fireeye-000000",
   "alert": {
     "src": {
-      "url": "/data/ma/share/winxp-sp3/src/41281428cd6f503f948e931d546e340c.exe"
+      "url": "/data/share/winxp-sp3/src/41281428cd6f503f948e931d546e340c.exe"
     },
     "severity": "majr",
-    "alert-url": "https://fireeye-85f7be/malware_analysis/analyses?maid=146658",
+    "alert-url": "https://fireeye-000000/malware_analysis/analyses?maid=146658",
     "explanation": {
       "malware-detected": {
         "malware": {
