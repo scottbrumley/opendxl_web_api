@@ -2,6 +2,10 @@
 
 ![Taxonomy](./images/taxonomy.jpg)
 
+
+## Tested on AX Appliance
+This has been tested using an AX & NX appliance with Malware Object Alerts
+
 ## Current Examples
 
 ### Base URL
