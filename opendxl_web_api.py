@@ -439,17 +439,11 @@ def setFireEyeTieRep(myToken):
     if 'malicious' in content:
         ## Read Malicous Field
         maliciousStr = content['alert']['explanation']['malware-detected']['malware']['malicious']
-
-    ## if not malicious then change to most likely trusted
-    if maliciousStr == "no":
-        trustlevelStr == "most_likely_trusted"
-
-    ## if malicious then change to known malicious
-    if maliciousStr == "yes":
-        trustlevelStr == "known_malicious"
+        print maliciousStr
 
     ## check for malware detection and malware fields.  If they exist get md5 if it exists
     if 'malware-detected' in content['alert']['explanation']:
+        maliciousStr = "yes"
         if 'malware' in content['alert']['explanation']['malware-detected']:
             ## Get md5 hash from FireEye and FileName
             if 'md5sum' in content['alert']['explanation']['malware-detected']['malware']:
@@ -462,7 +456,7 @@ def setFireEyeTieRep(myToken):
 
             ## If there is a filename and extention then get it
             ## Get FileName from FireEye
-            if 'type' in content['alert']['explanation']['malware-detected']['malware'] or 'name' in content['alert']['explanation']['malware-detected']['malware']:
+            if 'type' in content['alert']['explanation']['malware-detected']['malware'] and 'name' in content['alert']['explanation']['malware-detected']['malware']:
                 filenameStr = content['alert']['explanation']['malware-detected']['malware']['name'] + "." + content['alert']['explanation']['malware-detected']['malware']['type']
                 print filenameStr
         else:
@@ -481,6 +475,15 @@ def setFireEyeTieRep(myToken):
             return jsonify(
                 error= "invalid md5"
             )
+
+            ## if not malicious then change to most likely trusted
+        if maliciousStr == "no":
+            trustlevelStr == "most_likely_trusted"
+
+        ## if malicious then change to known malicious
+        if maliciousStr == "yes":
+            trustlevelStr == "known_malicious"
+
         ## Set the Reputation in TIE
         setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr)
     return jsonify(request.json)
