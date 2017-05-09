@@ -424,7 +424,8 @@ def setFireEyeTieRep(myToken):
     sha256 = ""
     commentStr = "Reputation set from FireEye via OpenDXL"
     filenameStr = ""
-    trustlevelStr = "known_malicious"
+    trustlevelStr = "most_likely_trusted"
+    maliciousStr = "no"
 
 
     if not authenticate(myToken):
@@ -433,16 +434,54 @@ def setFireEyeTieRep(myToken):
         )
 
     content = request.json
-    for item in content['alert']:
-        md5 = item['explanation']['malware-detected']['malware']['md5sum']
-        filenameStr = item['explanation']['malware-detected']['malware']['original']
+    print content
 
+    if 'malicious' in content:
+        ## Read Malicous Field
+        maliciousStr = content['alert']['explanation']['malware-detected']['malware']['malicious']
+
+    ## if not malicious then change to most likely trusted
+    if maliciousStr == "no":
+        trustlevelStr == "most_likely_trusted"
+
+    ## if malicious then change to known malicious
+    if maliciousStr == "yes":
+        trustlevelStr == "known_malicious"
+
+    ## check for malware detection and malware fields.  If they exist get md5 if it exists
+    if 'malware-detected' in content['alert']['explanation']:
+        if 'malware' in content['alert']['explanation']['malware-detected']:
+            ## Get md5 hash from FireEye and FileName
+            if 'md5sum' in content['alert']['explanation']['malware-detected']['malware']:
+                md5 = content['alert']['explanation']['malware-detected']['malware']['md5sum']
+                print md5
+            else:
+                return jsonify(
+                    error="md5sum field not present in JSON"
+                )
+
+            ## If there is a filename and extention then get it
+            ## Get FileName from FireEye
+            if 'type' in content['alert']['explanation']['malware-detected']['malware'] or 'name' in content['alert']['explanation']['malware-detected']['malware']:
+                filenameStr = content['alert']['explanation']['malware-detected']['malware']['name'] + "." + content['alert']['explanation']['malware-detected']['malware']['type']
+                print filenameStr
+        else:
+            return jsonify(
+                error="malware field not present in JSON"
+            )
+
+    else:
+        return jsonify(
+            error="malware-detected field not present in JSON"
+        )
+
+    ## Check to make sure this is a valid md5 hash
     if md5 != "":
         if not is_md5(md5):
             return jsonify(
                 error= "invalid md5"
             )
-
+        ## Set the Reputation in TIE
         setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr)
     return jsonify(request.json)
 
