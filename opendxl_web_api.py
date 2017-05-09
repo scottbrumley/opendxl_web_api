@@ -437,7 +437,7 @@ def setFireEyeTieRep(myToken):
     print content
 
     severityStr = content['alert']['severity']
-    print severityStr
+    print "Severity = " + severityStr
 
     ## check for malware detection and malware fields.  If they exist get md5 if it exists
     if 'malware-detected' in content['alert']['explanation']:
@@ -445,7 +445,7 @@ def setFireEyeTieRep(myToken):
             ## Get md5 hash from FireEye and FileName
             if 'md5sum' in content['alert']['explanation']['malware-detected']['malware']:
                 md5 = content['alert']['explanation']['malware-detected']['malware']['md5sum']
-                print md5
+                print "md5 hash = " + md5
             else:
                 return jsonify(
                     error="md5sum field not present in JSON"
@@ -455,7 +455,7 @@ def setFireEyeTieRep(myToken):
             ## Get FileName from FireEye
             if 'type' in content['alert']['explanation']['malware-detected']['malware'] and 'name' in content['alert']['explanation']['malware-detected']['malware']:
                 filenameStr = content['alert']['explanation']['malware-detected']['malware']['name'] + "." + content['alert']['explanation']['malware-detected']['malware']['type']
-                print filenameStr
+                print "Filename = " + filenameStr
         else:
             return jsonify(
                 error="malware field not present in JSON"
@@ -476,11 +476,15 @@ def setFireEyeTieRep(myToken):
         ## if malicious then change to known malicious
         if severityStr == "majr":
             trustlevelStr = "known_malicious"
-        else:
-            if severityStr == "unkn":
-                trustlevelStr = "unknown"
-            else:
-                trustlevelStr = "most_likely_trusted"
+
+        if severityStr == "unkn":
+            trustlevelStr = "unknown"
+
+        if severityStr == "minr":
+            trustlevelStr = "might_be_malicious"
+
+        if severityStr == "crit":
+            trustlevelStr = "known_malicious"
 
         ## Set the Reputation in TIE
         setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr)
