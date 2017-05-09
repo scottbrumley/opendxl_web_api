@@ -292,6 +292,22 @@ def getFileRep():
         else:
             return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, propList=propList,action="getfile",json=json)
 
+## Convert from FireEye Severity to McAfee Reputation
+def fireeyeToMcAfee(sevStr):
+    trustlevelStr = "most_likely_trusted"
+    if sevStr == "majr":
+        trustlevelStr = "known_malicious"
+
+    if sevStr == "unkn":
+        trustlevelStr = "unknown"
+
+    if sevStr == "minr":
+        trustlevelStr = "might_be_malicious"
+
+    if sevStr == "crit":
+        trustlevelStr = "known_malicious"
+    return trustlevelStr
+
 ## Map McAfee Trust Level from trustlevel string provided
 def getTrustLevel(trustlevelStr):
     trustlevelStr = trustlevelStr.lower()
@@ -424,9 +440,7 @@ def setFireEyeTieRep(myToken):
     sha256 = ""
     commentStr = "Reputation set from FireEye via OpenDXL"
     filenameStr = ""
-    trustlevelStr = "most_likely_trusted"
-    severityStr = "low"
-
+    severityStr = "unkn"
 
     if not authenticate(myToken):
         return jsonify(
@@ -473,18 +487,7 @@ def setFireEyeTieRep(myToken):
                 error= "invalid md5"
             )
 
-        ## if malicious then change to known malicious
-        if severityStr == "majr":
-            trustlevelStr = "known_malicious"
-
-        if severityStr == "unkn":
-            trustlevelStr = "unknown"
-
-        if severityStr == "minr":
-            trustlevelStr = "might_be_malicious"
-
-        if severityStr == "crit":
-            trustlevelStr = "known_malicious"
+        trustlevelStr = fireeyeToMcAfee(severityStr)
 
         ## Set the Reputation in TIE
         setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr)
