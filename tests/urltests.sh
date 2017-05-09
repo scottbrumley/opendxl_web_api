@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+export FLASK_PORT=5000   ## Configure Flask Port
 source /vagrant/tests/vars.sh
 
 ### Make sure Web Service Reponds with HTTP Code of 200
@@ -41,7 +42,10 @@ function test_sha256 {
     if [[ ${WEB_CONTENT} == *"error"* ]]; then
         echo ""
         echo "TEST FAILED: ${TEST_NAME}"
-        echo $WEB_CONTENT
+        echo $
+
+
+        WEB_CONTENT
         exit 1
     else
         echo "TEST SUCCESS: ${TEST_NAME}"
@@ -63,9 +67,55 @@ function test_md5 {
     fi
 }
 
+testJson='{
+  "product": "MAS",
+  "appliance-id": "00:00:00:00:00:00",
+  "appliance": "fireeye-000000",
+  "alert": {
+    "src": {
+      "url": "/data/ma/share/winxp-sp3/src/41281428cd6f503f948e931d546e340c.exe"
+    },
+    "severity": "majr",
+    "alert-url": "https://fireeye-85f7be/malware_analysis/analyses?maid=146658",
+    "explanation": {
+      "malware-detected": {
+        "malware": {
+          "executed-at": "2017-05-09T14:30:25Z",
+          "md5sum": "41281428cd6f503f948e931d546e340c",
+          "type": "exe",
+          "name": "Trojan.LuminosityLink"
+        }
+      }
+    },
+    "occurred": "2017-05-09T14:30:25Z",
+    "action": "notified",
+    "id": "146658",
+    "name": "malware-object"
+  },
+  "version": "7.7.5.577562",
+  "msg": "concise"
+}'
+
+function test_fireEye {
+    TEST_NAME="Test FireEye"
+    echo "#### TEST: ${TEST_NAME} ####"
+    echo "     Testing ${TEST_URL}/tie/fireeye/setfile/${MD5_TEST} ####"
+
+    WEB_CONTENT=$(sudo wget -O-  --header "Content-Type: application/json" --post-file /vagrant/tests/fireeye.json "${TEST_URL}/tie/fireeye/setfile/${FLASK_TOKEN}" 2>&1)
+    if [[ ${WEB_CONTENT} == *"error"* ]]; then
+        echo ""
+        echo "TEST FAILED: ${TEST_NAME}"
+        echo $WEB_CONTENT
+        exit 1
+    else
+        echo "TEST SUCCESS: ${TEST_NAME}"
+    fi
+}
+
 ### Begin Testing ###
 
 test_http_code
 test_sha1
 test_sha256
+test_fireEye
 echo "All Test Successful"
