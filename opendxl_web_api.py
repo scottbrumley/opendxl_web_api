@@ -425,7 +425,7 @@ def setFireEyeTieRep(myToken):
     commentStr = "Reputation set from FireEye via OpenDXL"
     filenameStr = ""
     trustlevelStr = "most_likely_trusted"
-    maliciousStr = "no"
+    severityStr = "low"
 
 
     if not authenticate(myToken):
@@ -436,14 +436,11 @@ def setFireEyeTieRep(myToken):
     content = request.json
     print content
 
-    if 'malicious' in content:
-        ## Read Malicous Field
-        maliciousStr = content['alert']['explanation']['malware-detected']['malware']['malicious']
-        print maliciousStr
+    severityStr = content['alert']['severity']
+    print severityStr
 
     ## check for malware detection and malware fields.  If they exist get md5 if it exists
     if 'malware-detected' in content['alert']['explanation']:
-        maliciousStr = "yes"
         if 'malware' in content['alert']['explanation']['malware-detected']:
             ## Get md5 hash from FireEye and FileName
             if 'md5sum' in content['alert']['explanation']['malware-detected']['malware']:
@@ -476,13 +473,11 @@ def setFireEyeTieRep(myToken):
                 error= "invalid md5"
             )
 
-            ## if not malicious then change to most likely trusted
-        if maliciousStr == "no":
-            trustlevelStr == "most_likely_trusted"
-
         ## if malicious then change to known malicious
-        if maliciousStr == "yes":
-            trustlevelStr == "known_malicious"
+        if severityStr == "majr":
+            trustlevelStr = "known_malicious"
+        else:
+            trustlevelStr = "most_likely_trusted"
 
         ## Set the Reputation in TIE
         setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr)
