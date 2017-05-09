@@ -477,7 +477,10 @@ def setFireEyeTieRep(myToken):
         if severityStr == "majr":
             trustlevelStr = "known_malicious"
         else:
-            trustlevelStr = "most_likely_trusted"
+            if severityStr == "unkn":
+                trustlevelStr = "unknown"
+            else:
+                trustlevelStr = "most_likely_trusted"
 
         ## Set the Reputation in TIE
         setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr)
