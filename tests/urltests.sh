@@ -112,10 +112,35 @@ function test_fireEye {
     fi
 }
 
+function setFileRep {
+    TEST_NAME="Test WannaCry ${1}"
+    echo "#### TEST: ${TEST_NAME} ####"
+    echo "     Testing ${TEST_URL}/tie/setfile/?sha256=${1}&token=${FLASK_TOKEN} ####"
+
+    WEB_CONTENT=$(sudo wget -O - "${TEST_URL}/tie/setfile/?sha256=${1}&token=${FLASK_TOKEN}&comment=WannaCry&trustlevel=known_malicious$json=true" 2>&1)
+    if [[ ${WEB_CONTENT} == *"error"* ]]; then
+        echo ""
+        echo "TEST FAILED: ${TEST_NAME}"
+        echo $WEB_CONTENT
+        exit 1
+    else
+        echo "TEST SUCCESS: ${TEST_NAME}"
+    fi
+}
+
+function setWannaCryHashes {
+    echo "Setting Files Hashes from Wanna Cry Ransomware Attack 2017"
+    while IFS='' read -r line || [[ -n "$line" ]]; do
+        #echo "Setting TIE Reputation: $line"
+        setFileRep $line
+    done < "$1"
+}
+
 ### Begin Testing ###
 
 test_http_code
 test_sha1
 test_sha256
 test_fireEye
+setWannaCryHashes /vagrant/tests/wannacryhashes.txt
 echo "All Test Successful"
