@@ -411,7 +411,7 @@ def setTieRep():
         if request.args.get('comment'):
             commentStr = request.args.get('comment')
         if request.args.get('trustlevel'):
-            trustlevelStr = request.args.get('trustlevel')
+            trustLevelStr = request.args.get('trustlevel')
 
         if request.args.get('token'):
             myToken = request.args.get('token')
@@ -421,14 +421,14 @@ def setTieRep():
                 access = "access denied"
             )
 
-        setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr)
+        setReputation(trustLevelStr, md5, sha1, sha256, filenameStr, commentStr)
 
         if json == "true":
             return jsonify(
-                status=trustlevelStr
+                status=trustLevelStr
             )
         else:
-            return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, status=trustlevelStr, filename=filenameStr, comment=commentStr, action="setfile",json=json)
+            return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, status=trustLevelStr, filename=filenameStr, comment=commentStr, action="setfile",json=json)
     if request.method == 'POST':
         data = request.form
 
