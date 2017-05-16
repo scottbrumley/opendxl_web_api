@@ -1,6 +1,11 @@
 #!/bin/bash
 
 FLASK_PID_FILE="/tmp/flask_pid"
+if [[ -d "/vagrant" ]]; then
+    ROOT_DIR="/vagrant/"
+else
+    ROOT_DIR="$(pwd)/"
+fi
 
 export FLASK_PORT=5000   ## Configure Flask Port
 
@@ -11,7 +16,7 @@ fi
 
 function start {
     echo "Running Flask ..."
-    FLASK_APP="/vagrant/opendxl_web_api.py"
+    FLASK_APP="/${ROOT_DIR}/opendxl_web_api.py"
     /usr/local/bin/flask run --host=0.0.0.0 --port=${FLASK_PORT}&
     FLASK_PID="$!"
     echo "FLASK_PID=${FLASK_PID}" > "${FLASK_PID_FILE}"
@@ -30,7 +35,7 @@ function restart {
 }
 
 function test {
-    /vagrant/tests/urltests.sh
+    /${ROOT_DIR}/tests/urltests.sh
     if [[ $? == 1 ]]; then
         stop
     fi
