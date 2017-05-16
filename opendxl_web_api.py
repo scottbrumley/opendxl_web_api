@@ -44,7 +44,7 @@ logger.addHandler(console_handler)
 logger.setLevel(logging.INFO)
 
 ## DXL Client Configuration
-CONFIG_FILE_NAME = "/vagrant/dxlclient.config"
+CONFIG_FILE_NAME = "./dxlclient.config"
 
 # The topic for requesting file reputations
 FILE_GET_REP_TOPIC = "/mcafee/service/tie/file/reputation"
