@@ -1,8 +1,14 @@
 #!/bin/bash
 set -e
 
+if [[ -d "/vagrant" ]]; then
+    ROOT_DIR="/vagrant/"
+else
+    ROOT_DIR="$(pwd)/"
+fi
+
 export FLASK_PORT=5000   ## Configure Flask Port
-source /vagrant/tests/vars.sh
+source /${ROOT_DIR}/tests/vars.sh
 
 ### Make sure Web Service Reponds with HTTP Code of 200
 function test_http_code {
@@ -101,7 +107,7 @@ function test_fireEye {
     echo "#### TEST: ${TEST_NAME} ####"
     echo "     Testing ${TEST_URL}/tie/fireeye/setfile/${MD5_TEST} ####"
 
-    WEB_CONTENT=$(sudo wget -O-  --header "Content-Type: application/json" --post-file /vagrant/tests/fireeye.json "${TEST_URL}/tie/fireeye/setfile/${FLASK_TOKEN}" 2>&1)
+    WEB_CONTENT=$(sudo wget -O-  --header "Content-Type: application/json" --post-file /${ROOT_DIR}/tests/fireeye.json "${TEST_URL}/tie/fireeye/setfile/${FLASK_TOKEN}" 2>&1)
     if [[ ${WEB_CONTENT} == *"error"* ]]; then
         echo ""
         echo "TEST FAILED: ${TEST_NAME}"
@@ -142,5 +148,5 @@ test_http_code
 test_sha1
 test_sha256
 test_fireEye
-setWannaCryHashes /vagrant/tests/wannacryhashes.txt
+setWannaCryHashes /${ROOT_DIR}/tests/wannacryhashes.txt
 echo "All Test Successful"
