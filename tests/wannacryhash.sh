@@ -2,8 +2,14 @@
 
 set -e
 
+if [[ -d "/vagrant" ]]; then
+    ROOT_DIR="/vagrant/"
+else
+    ROOT_DIR="$(pwd)/"
+fi
+
 export FLASK_PORT=5000   ## Configure Flask Port
-source /vagrant/tests/vars.sh
+source /${ROOT_DIR}/tests/vars.sh
 
 function setFileRep {
     TEST_NAME="Test WannaCry"
