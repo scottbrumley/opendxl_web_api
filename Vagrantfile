@@ -6,7 +6,7 @@ Vagrant.configure(2) do |config|
             web.vm.box = "sbrumley/opendxl"
             web.vm.hostname = "web"
             web.vm.network "forwarded_port", guest: 5000, host: 5000
-            web.vm.provision "shell", path: "scripts/bootstrap-webapi.sh"
+            web.vm.provision "shell", path: "scripts/bootstrap.sh"
             web.vm.provider :virtualbox do |v|
                 v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
                 v.customize ["modifyvm", :id, "--memory", 512]
