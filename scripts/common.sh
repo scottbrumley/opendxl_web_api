@@ -6,6 +6,15 @@ else
     ROOT_DIR="$(pwd)/"
 fi
 
+function updateUpgrade {
+    sudo apt-get update && apt-get -y upgrade
+}
+
+function cleanUp {
+    sudo apt-get autoremove
+    sudo apt-get clean
+}
+
 function installOpenDXLClient {
     ### Install Open DXL Client
     echo "Installing Open DXL Client"
@@ -51,7 +60,6 @@ function buildCertsFolders {
 
 installDocker(){
     if ! [ -x "$(command -v docker)" ]; then
-        sudo apt-get remove -y docker-engine
         sudo apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual
         sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
         curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
