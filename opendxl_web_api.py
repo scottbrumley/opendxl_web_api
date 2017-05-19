@@ -16,10 +16,6 @@ from dxlclient.client import DxlClient
 from dxlclient.client_config import DxlClientConfig
 from dxlclient.message import Message, Request
 
-from dxlmarclient import MarClient
-
-from dxlepoclient import EpoClient, OutputFormat
-
 from dxltieclient import TieClient
 from dxltieclient.constants import HashType, TrustLevel, FileProvider, ReputationProp, CertProvider, CertReputationProp, CertReputationOverriddenProp
 
