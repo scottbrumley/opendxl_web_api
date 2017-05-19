@@ -1,8 +1,8 @@
 #!/bin/bash
 
-source scripts/common.sh
+source /vagrant/scripts/common.sh
 
-scripts/bootstrap.sh
+/vagrant/scripts/bootstrap.sh
 installDocker
 
 
