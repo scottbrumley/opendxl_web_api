@@ -2,7 +2,7 @@
 
 source scripts/common.sh
 
+scripts/bootstrap.sh
 installDocker
 
-scripts/bootstrap.sh
 
