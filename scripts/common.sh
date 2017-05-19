@@ -6,8 +6,13 @@ else
     ROOT_DIR="$(pwd)/"
 fi
 
-function updateUpgrade {
-    sudo apt-get update && apt-get -y upgrade
+function ubuntuUpgrade {
+    sudo apt-get install -y unattended-upgrades
+    sudo apt-get -y upgrade
+}
+
+function ubuntuUpdate {
+    sudo apt-get update
 }
 
 function cleanUp {

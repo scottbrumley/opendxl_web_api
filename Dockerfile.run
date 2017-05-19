@@ -1,0 +1,7 @@
+FROM sbrumley/opendxl-webapi
+
+ADD brokercerts/ brokercerts/
+ADD certs/ certs/
+ADD dxlclient.config dxlclient.config
+
+CMD ["/scripts/service.sh","start"]
