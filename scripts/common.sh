@@ -16,8 +16,8 @@ function ubuntuUpdate {
 }
 
 function cleanUp {
-    sudo apt-get autoremove
-    sudo apt-get clean
+    sudo apt-get -y autoremove
+    sudo apt-get -y clean
 }
 
 function installOpenDXLClient {
@@ -63,16 +63,34 @@ function buildCertsFolders {
     sudo touch /${ROOT_DIR}/dxlclient.config
 }
 
-installDocker(){
-    if ! [ -x "$(command -v docker)" ]; then
-        sudo apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual
-        sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-        # Verify  sudo apt-key fingerprint 0EBFCD88
-        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-        sudo apt-get update
-        sudo apt-get install -y docker-ce
-        sudo gpasswd -a vagrant docker
-        sudo service docker restart
+function installDocker(){
+    ${SUDO}apt-get remove -y docker-engine
+    ${SUDO}apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual
+    ${SUDO}apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    # Verify  sudo apt-key fingerprint 0EBFCD88
+    ${SUDO}add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    ${SUDO}apt-get update
+    ${SUDO}apt-get install -y docker-ce
+    ${SUDO}gpasswd -a vagrant docker
+    ${SUDO}service docker restart
+}
+
+installSudo(){
+    if ! [ -x "$(command -v sudo)" ]; then
+        echo 'Error: sudo is not installed.' >&2
+        SUDO=""
+        ${SUDO}apt-get install -y sudo
+    else
+        SUDO="sudo "
     fi
+
+}
+
+installFlask(){
+    ## Setup Flask
+    ## Use flask run --host=0.0.0.0 to start Flask
+    ${SUDO}pip install Flask
+    ## Setup Flask Environment
+    ${SUDO}echo 'export FLASK_APP=/${ROOT_DIR}/opendxl_web_api.py' >> /etc/bash.bashrc
 }
