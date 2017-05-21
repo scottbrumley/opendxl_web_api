@@ -57,6 +57,13 @@ if [[ ${1} == "start" ]]; then
     echo "Flask Started"
 fi
 
+if [[ ${1} == "debug" ]]; then
+    start
+    # Testing
+    test
+    echo "Flask Started in Debug Mode"
+fi
+
 if [[ ${1} == "stop" ]]; then
     stop
     echo "Flask Stopped"
