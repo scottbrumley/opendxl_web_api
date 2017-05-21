@@ -25,5 +25,5 @@ ENV FLASK_APP=/opendxl_web_api.py
 RUN echo "Installing Open DXL TIE Client"
 RUN cd / && cd /opendxl-tie-client-python && python setup.py install
 
-CMD /scripts/service.sh start
+CMD /scripts/service.sh debug
 
