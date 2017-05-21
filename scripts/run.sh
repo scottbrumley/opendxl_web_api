@@ -1,5 +1,7 @@
 #!/bin/bash
 
-docker build -t mcafee:opendxl-webapi -f Dockerfile.run .
+source scripts/vars.sh
 
-docker run -d -p 5000:5000 --name opendxl-webapi  -ti mcafee:opendxl-webapi /bin/bash
+docker build -t ${LOCAL_BUILD} -f Dockerfile.run .
+
+docker run -d -p 5000:5000 --name opendxl-webapi  -ti ${LOCAL_BUILD}

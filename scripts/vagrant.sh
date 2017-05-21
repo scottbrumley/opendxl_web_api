@@ -3,9 +3,8 @@
 source /vagrant/scripts/vars.sh
 source /vagrant/scripts/common.sh
 
-installSudo
-installFlask
-installDocker
+ubuntuUpdate
 /vagrant/scripts/bootstrap.sh
+installDocker
 
 

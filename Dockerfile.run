@@ -1,7 +1,8 @@
-FROM sbrumley/opendxl-webapi
+FROM mcafee/opendxl-webapi:0.1.1
 
 ADD brokercerts/ brokercerts/
 ADD certs/ certs/
 ADD dxlclient.config dxlclient.config
 
-CMD ["/scripts/service.sh","start"]
+ENV FLASK_TOKEN="27612211994137900087"
+

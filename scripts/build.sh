@@ -2,15 +2,14 @@
 
 source scripts/vars.sh
 
-#!/bin/bash
-
 if [ "${1}" == "push" ]; then
-    echo "Building and Pushing Container to Docker Hub"
+    echo "Building and Pushing Container ${LOCAL_BULD} to Docker Hub"
     docker build -t ${LOCAL_BUILD} .
     docker login
+    echo "Tagging Container ${LOCAL_BUILD} to ${REMOTE_BUILD} for Shipping"
     docker tag ${LOCAL_BUILD} ${REMOTE_BUILD}
     docker push ${REMOTE_BUILD}
 else
-   echo "Building Locally"
+   echo "Building Local Image ${LOCAL_BUILD}"
    docker build -t ${LOCAL_BUILD} .
 fi
