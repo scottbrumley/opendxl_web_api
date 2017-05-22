@@ -1,6 +1,6 @@
 FROM sbrumley/opendxl:0.1.1
 
-RUN apk add --no-cache bash wget
+RUN apk add --no-cache bash wget git
 
 ADD scripts/common.sh scripts/common.sh
 ADD scripts/bootstrap.sh scripts/bootstrap.sh
