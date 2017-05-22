@@ -8,10 +8,13 @@ ADD scripts/service.sh scripts/service.sh
 ADD scripts/vars.sh scripts/vars.sh
 ADD templates/ templates/
 ADD tests/ tests/
-ADD opendxl-tie-client-python/ opendxl-tie-client-python/
 
 ##  MY code
 ADD opendxl_web_api.py opendxl_web_api.py
+
+## Install OpenDXL TIE Client
+RUN echo "Installing Open DXL TIE Client"
+RUN git clone https://github.com/opendxl/opendxl-client-python.git && cd /opendxl-tie-client-python && python setup.py install
 
 ### Python Common
 RUN echo "Installing Python Common"
@@ -20,10 +23,6 @@ RUN pip install common
 RUN pip install Flask
 ## Setup Flask Environment
 ENV FLASK_APP=/opendxl_web_api.py
-
-### Install Open DXL TIE Client
-RUN echo "Installing Open DXL TIE Client"
-RUN cd / && cd /opendxl-tie-client-python && python setup.py install
 
 CMD /scripts/service.sh debug
 

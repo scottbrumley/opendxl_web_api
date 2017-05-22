@@ -2,6 +2,8 @@
 
 source scripts/vars.sh
 
+rm -rf opendxl-tie-client-python
+
 if [ "${1}" == "push" ]; then
     echo "Building and Pushing Container ${LOCAL_BULD} to Docker Hub"
     docker build -t ${LOCAL_BUILD} -f Dockerfile .
