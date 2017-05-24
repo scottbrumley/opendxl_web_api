@@ -288,6 +288,11 @@ def getFileRep():
         else:
             return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, propList=propList,action="getfile",json=json)
 
+### Route for dxl
+@app.route('/dxl/')
+def busMessages():
+    return render_template('messages.html')
+
 ## Convert from FireEye Severity to McAfee Reputation
 def fireeyeToMcAfee(sevStr):
     trustlevelStr = "most_likely_trusted"
