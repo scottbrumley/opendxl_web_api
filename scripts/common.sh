@@ -102,6 +102,14 @@ installFlask(){
 
 installD3(){
     ${SUDO}apt-get install -y unzip
+    mkdir -p static/d3
     wget https://github.com/d3/d3/releases/download/v4.9.1/d3.zip
-    ${SUDO}unzip d3.zip -d static
+    ${SUDO}unzip d3.zip -d static/d3
+    ${SUDO}rm -f d3.zip
+}
+
+installEventDrops(){
+    cd static
+    git clone https://github.com/marmelab/EventDrops.git
+    cd ..
 }

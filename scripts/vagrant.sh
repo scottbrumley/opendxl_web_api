@@ -7,4 +7,4 @@ ubuntuUpdate
 /vagrant/scripts/bootstrap.sh
 installDocker
 installD3
-
+installEventDrops
