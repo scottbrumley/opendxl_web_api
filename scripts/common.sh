@@ -99,3 +99,9 @@ installFlask(){
     echo "${SUDO}echo 'export FLASK_APP=/${ROOT_DIR}/opendxl_web_api.py' >> /etc/bash.bashrc"
     ${SUDO}echo 'export FLASK_APP=/${ROOT_DIR}/opendxl_web_api.py' >> /etc/bash.bashrc
 }
+
+installD3(){
+    ${SUDO}apt-get install -y unzip
+    wget https://github.com/d3/d3/releases/download/v4.9.1/d3.zip
+    ${SUDO}unzip d3.zip -d static
+}
