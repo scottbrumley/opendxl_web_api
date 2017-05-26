@@ -109,7 +109,11 @@ installD3(){
 }
 
 installEventDrops(){
-    #cd static
-    #git clone https://github.com/marmelab/EventDrops.git
-    #cd ..
+    cd static
+    git clone https://github.com/marmelab/EventDrops.git
+    cd ..
+}
+
+installFlaskSockets(){
+    ${SUDO}pip install flask-socketio
 }
