@@ -3,21 +3,14 @@
 
 <!--Load the AJAX API-->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script type="text/javascript">
+<script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    var pageData = {};
 
-    // Load the Visualization API and the piechart package.
-    // Sgoogle.charts.load('current', {'packages':['corechart']});
-
-    google.charts.load("current", {packages:["timeline"]});
-    google.charts.setOnLoadCallback(drawChart);
-
-    function drawChart() {
-        var jsonData = $.ajax({
-            url: "/dxldata",
-            dataType: "jsonp",
-            async: false
-        }).responseText;
+    function drawChart(jsonData) {
+        console.log(pageData.timeline);
+        console.log("Draw Chart: " + jsonData);
 
         var container = document.getElementById('example3.1');
         var chart = new google.visualization.Timeline(container);
@@ -28,7 +21,30 @@
                 barLabelStyle: { fontName: 'Garamond', fontSize: 14 } }
         };
         chart.draw(dataTable,options);
-    }
+
+        //var jsonData = $.ajax({
+        //    url: "/dxldata",
+        //    dataType: "jsonp",
+        //    async: false
+        //}).responseText;
+    };
+
+    $(document).ready(function(){
+        google.charts.load("current", {packages:["timeline"]});
+        var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
+
+        socket.on('my_response', function(msg) {
+            //$('#log').append('<p>Received 11: ' + msg + '</p>');
+            console.log("Document Ready: " + msg);
+            pageData.timeline = msg;
+            pageData.head = "Response";
+            drawChart(msg);
+            google.charts.setOnLoadCallback(drawChart(msg));
+        });
+    });
+
+
+
 </script>
 
 </head>

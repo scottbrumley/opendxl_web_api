@@ -12,7 +12,7 @@ import os
 import sys
 import json, time
 import flask
-from flask import stream_with_context, request, Response
+
 
 from dxlclient.callbacks import EventCallback
 from dxlclient.client import DxlClient
@@ -27,6 +27,9 @@ from flask import Response
 from flask import render_template
 from flask import request
 from flask import jsonify
+from flask import stream_with_context, request, Response
+from flask_socketio import SocketIO
+from flask_socketio import send, emit
 
 # Import common logging and configuration
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/..")
@@ -107,9 +110,16 @@ tiescoreMap = {0:'Not Set', 1:'Known Malicious', 15: 'Most Likely Malicious', 30
 ## TIE Provider Map
 providerMap = {1:'GTI', 3:'Enterprise Reputation', 5:'ATD',7:"MWG"}
 
-## Start Web API
+# Set this variable to "threading", "eventlet" or "gevent" to test the
+# different async modes, or leave it set to None for the application to choose
+# the best option based on installed packages.
+async_mode = None
 
+## Start Web API
 app = Flask(__name__)
+#socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode=async_mode)
+thread = None
 
 ##### About #####
 @app.route('/about')
@@ -292,13 +302,16 @@ def getFileRep():
         else:
             return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, propList=propList,action="getfile",json=json)
 
-### Route for dxl
-@app.route('/dxl/')
-def busMessages():
-    return render_template('messages.html')
+def background_thread():
+    """Example of how to send server generated events to clients."""
+    count = 0
+    while True:
+        socketio.sleep(10)
+        count += 1
+        socketio.emit('my_response',
+                      {'data': 'Server generated event', 'count': count},
+                      namespace='/test')
 
-### Streams DXL Data
-@app.route('/dxldata/')
 def dxldata():
     vendorsDict = {}
 
@@ -335,54 +348,79 @@ def dxldata():
     rowsEndStr = ']}'
     buildJsonStr = startColStr + vendorStr + dummyLabelStr + toolTipStr + messStartStr + messStopStr + endColStr + rowsStartStr
 
-    for vendors in vendorsDict:
-        print "Name: " + vendorsDict[vendors]["name"]
-        print "Topic: " + vendorsDict[vendors]["topic"]
-        print "Message: " + vendorsDict[vendors]["message"]
-        messStr = messStr + '{"c":[{"v": "' + vendorsDict[vendors]["name"] + '"}, {"v": null}, {"v": "<h2>' + vendorsDict[vendors]["topic"] + '</h2><br>2017-05-23 13:08:25<br>' + vendorsDict[vendors]["message"] + '"}, {"v": "Date(2017, 5, 25, 12, 0 ,0)", "f":null}, {"v": "Date(2017, 5, 25, 12, 5 ,0)", "f":null}]},'
-        print messStr
+    #for vendors in vendorsDict:
+    #    print "Name: " + vendorsDict[vendors]["name"]
+    #    print "Topic: " + vendorsDict[vendors]["topic"]
+    #    print "Message: " + vendorsDict[vendors]["message"]
+    #    messStr = messStr + '{"c":[{"v": "' + vendorsDict[vendors]["name"] + '"}, {"v": null}, {"v": "<h2>' + vendorsDict[vendors]["topic"] + '</h2><br>2017-05-23 13:08:25<br>' + vendorsDict[vendors]["message"] + '"}, {"v": "Date(2017, 5, 25, 12, 0 ,0)", "f":null}, {"v": "Date(2017, 5, 25, 12, 5 ,0)", "f":null}]}'
 
+    mcafeeStr = '{"c":[{"v": "McAfee"}, {"v": null}, {"v": "<h2>/mcafee/event/tie/file/repchange/broadcast</h2><br>2017-05-23 13:08:25<br>{My Cool McAfee Message}"}, {"v": "Date(2017, 5, 25, 12, 0 ,0)", "f":null}, {"v": "Date(2017, 5, 25, 12, 5 ,0)", "f":null}]},'
+    arubaStr = '{"c":[{"v": "Aruba"}, {"v": null}, {"v": "<h2>/aruba/event/clearpass/log</h2><br>{My Cool Aruba Message}"}, {"v": "Date(2017, 5, 25, 13, 0 ,0)"}, {"v": "Date(2017, 5, 25, 13, 5 ,0)"}]},'
+    checkpointStr = '{"c":[{"v": "Check Point"}, {"v": null}, {"v": "<h2>/checkpoint/event/detection</h2><br>{My Cool Check Point Message}"}, {"v": "Date(2017, 5, 25, 14, 0 ,0)"}, {"v": "Date(2017, 5, 25, 14, 5 ,0)"}]}'
 
-    #mcafeeStr = '{"c":[{"v": "McAfee"}, {"v": null}, {"v": "<h2>/mcafee/event/tie/file/repchange/broadcast</h2><br>2017-05-23 13:08:25<br>{My Cool McAfee Message}"}, {"v": "Date(2017, 5, 25, 12, 0 ,0)", "f":null}, {"v": "Date(2017, 5, 25, 12, 5 ,0)", "f":null}]},'
-    #arubaStr = '{"c":[{"v": "Aruba"}, {"v": null}, {"v": "<h2>/aruba/event/clearpass/log</h2><br>{My Cool Aruba Message}"}, {"v": "Date(2017, 5, 25, 13, 0 ,0)"}, {"v": "Date(2017, 5, 25, 13, 5 ,0)"}]},'
-    #checkpointStr = '{"c":[{"v": "Check Point"}, {"v": null}, {"v": "<h2>/checkpoint/event/detection</h2><br>{My Cool Check Point Message}"}, {"v": "Date(2017, 5, 25, 14, 0 ,0)"}, {"v": "Date(2017, 5, 25, 14, 5 ,0)"}]}'
+    messStr = mcafeeStr + arubaStr + checkpointStr
 
-    #messStr = mcafeeStr + arubaStr + checkpointStr
+    # Remove the last comma
+    #messStr = messStr[:-1]
     buildJsonStr = buildJsonStr + messStr + rowsEndStr
 
-   ### Get Events off DXL Bus
-    #def getEvents():
-    #    SERVICE_TOPIC = "/mcafee/event/tie/file/repchange/broadcast"
-        # Create the client
-    #    with DxlClient(config) as client:
-            # Connect to the fabric
-    #        client.connect()
-    #        class ChgRepCallback(EventCallback):
-    #            def on_event(self, event):
-                    # Extract
-    #                resultStr = json.loads(event.payload.decode())
-    #                print event.destination_topic
-    #                print resultStr
-    #                myJson = jsonify(
-    #                    topic=event.destination_topic,
-    #                    result=resultStr
-    #                )
-    #                yield 'Hi'
-    #                yield myJson
+    ## Get Events off DXL Bus
+    # def getEvents():
+    #     SERVICE_TOPIC = "/mcafee/event/tie/file/repchange/broadcast"
+    #    # Create the client
+    #     with DxlClient(config) as client:
+    #        # Connect to the fabric
+    #         client.connect()
+    #         class ChgRepCallback(EventCallback):
+    #             def on_event(self, event):
+    #                 # Extract
+    #                 resultStr = json.loads(event.payload.decode())
+    #                 print event.destination_topic
+    #                 print resultStr
+    #                 myJson = jsonify(
+    #                     topic=event.destination_topic,
+    #                     result=resultStr
+    #                 )
+    #                 #yield myJson
+    #                 #send(myJson, json=True)
 
-    #        client.add_event_callback(SERVICE_TOPIC, ChgRepCallback())
+    #         client.add_event_callback(SERVICE_TOPIC, ChgRepCallback())
 
-            #while True:
-            #    #yield flask.render_template('data.html', **myJson)
-            #    time.sleep(60)
+    #         while True:
+    #             #yield flask.render_template('data.html', **myJson)
+    #             time.sleep(60)
 
 
-    #return Response(getEvents(), mimetype= 'text/event-stream')
+    # return Response(getEvents(), mimetype= 'text/event-stream')
 
-    def generate():
-        yield buildJsonStr
+    #@socketio.on('json')
+    #def handle_json(json):
+    #    send(json, json=True)
+    print buildJsonStr
+    count = 0
+    #socketio.emit('my_response',
+    #              buildJsonStr,
+    #              namespace='/test')
 
-    return Response(stream_with_context(generate()), mimetype= 'application/json')
+    socketio.emit("my_response",buildJsonStr, namespace='/test')
+
+### Route for dxl
+@app.route('/dxl/')
+def busMessages():
+    return render_template('messages.html')
+
+@socketio.on('connect', namespace='/test')
+def test_connect():
+    global thread
+    if thread is None:
+        thread = socketio.start_background_task(target=dxldata)
+    #emit('my_response', {'data': 'Connected', 'count': 0})
+
+@socketio.on('disconnect', namespace='/test')
+def test_disconnect():
+    print('Client disconnected')
+
+
 
 ## Convert from FireEye Severity to McAfee Reputation
 def fireeyeToMcAfee(sevStr):
@@ -685,4 +723,5 @@ def ping():
 
 if __name__ == '__main__':
     #app.run(debug=True, port=5000, host='0.0.0.0')
-    app.run()
+    socketio.run(app)
+    #app.run()
