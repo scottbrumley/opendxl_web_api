@@ -8,3 +8,4 @@ ubuntuUpdate
 installDocker
 #installD3
 #installEventDrops
+installFlaskSockets
