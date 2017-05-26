@@ -115,5 +115,6 @@ installEventDrops(){
 }
 
 installFlaskSockets(){
-    ${SUDO}pip install flask-socketio
+    ${SUDO}pip install flask-socketio  # Python Flask Web Sockets
+    ${SUOD}pip install eventlet   #Python Networking Library
 }
