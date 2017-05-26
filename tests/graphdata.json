@@ -1,0 +1,9 @@
+{
+  "cols": [{"id": "task", "label": "Employee Name", "type": "string"},
+    {"id": "startDate","label": "Start Date", "type": "date"},
+    {"id": "endDate", "label": "End Date", "type": "date"}],
+  "rows": [{"c":[{"v": "Mike"}, {"v": "new Date(2008, 1, 28)", "f":null}, {"v": "new Date(2008, 1, 29)", "f":null}]},
+    {"c":[{"v": "Bob"}, {"v": "new Date(2007, 5, 1)"}, {"v": "new Date(2007, 5, 2)"}]},
+    {"c":[{"v": "Alice"}, {"v": "new Date(2006, 7, 16)"}, {"v": "new Date(2006, 7, 17)"}]}
+  ]
+}

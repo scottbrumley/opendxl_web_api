@@ -147,3 +147,4 @@ dxlclient.config
 *.iml
 /static/d3/
 /d3.zip
+/static/EventDrops/

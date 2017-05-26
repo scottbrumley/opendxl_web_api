@@ -10,8 +10,11 @@ import base64
 import logging
 import os
 import sys
-import json
+import json, time
+import flask
+from flask import stream_with_context, request, Response
 
+from dxlclient.callbacks import EventCallback
 from dxlclient.client import DxlClient
 from dxlclient.client_config import DxlClientConfig
 from dxlclient.message import Message, Request
@@ -20,6 +23,7 @@ from dxltieclient import TieClient
 from dxltieclient.constants import HashType, TrustLevel, FileProvider, ReputationProp, CertProvider, CertReputationProp, CertReputationOverriddenProp
 
 from flask import Flask
+from flask import Response
 from flask import render_template
 from flask import request
 from flask import jsonify
@@ -292,6 +296,93 @@ def getFileRep():
 @app.route('/dxl/')
 def busMessages():
     return render_template('messages.html')
+
+### Streams DXL Data
+@app.route('/dxldata/')
+def dxldata():
+    vendorsDict = {}
+
+    ## Add Vendors to Dictionary
+    vendorsDict['mcafeetie'] = {}
+    vendorsDict['arubacp'] = {}
+    vendorsDict['checkpointfw'] = {}
+
+    ## Vendor Service Names
+    vendorsDict['mcafeetie']['name'] = "McAfee TIE"
+    vendorsDict['arubacp']['name'] = "Aruba Clear Pass"
+    vendorsDict['checkpointfw']['name'] = "Check Point Firewall"
+
+    ## Vendor Service Topic
+    vendorsDict['mcafeetie']['topic'] = "/mcafee/event/tie/file/repchange/broadcast"
+    vendorsDict['arubacp']['topic'] = "/aruba/event/clearpass/log"
+    vendorsDict['checkpointfw']['topic'] = "/checkpoint/event/detection"
+
+    ## Vendor Messages
+    vendorsDict['mcafeetie']['message'] = "{My Cool McAfee Message}"
+    vendorsDict['arubacp']['message'] = "{My Cool Aruba Message}"
+    vendorsDict['checkpointfw']['message'] = "{My Cool Check Point Message}"
+
+
+    startColStr = '{"cols": ['
+    vendorStr = '{"id": "task", "label": "Vendor name", "type": "string" },'
+    dummyLabelStr = '{"type": "string", "id": "dummy bar label"},'
+    toolTipStr = '{"type": "string", "role": "tooltip", "p": {"html": true} },'
+    messStartStr = '{"id": "startDate","label": "Start Date", "type": "date"},'
+    messStopStr = '{"id": "endDate", "label": "End Date", "type": "date"}'
+    messStr = ''
+    endColStr = '],'
+    rowsStartStr = '"rows": ['
+    rowsEndStr = ']}'
+    buildJsonStr = startColStr + vendorStr + dummyLabelStr + toolTipStr + messStartStr + messStopStr + endColStr + rowsStartStr
+
+    for vendors in vendorsDict:
+        print "Name: " + vendorsDict[vendors]["name"]
+        print "Topic: " + vendorsDict[vendors]["topic"]
+        print "Message: " + vendorsDict[vendors]["message"]
+        messStr = messStr + '{"c":[{"v": "' + vendorsDict[vendors]["name"] + '"}, {"v": null}, {"v": "<h2>' + vendorsDict[vendors]["topic"] + '</h2><br>2017-05-23 13:08:25<br>' + vendorsDict[vendors]["message"] + '"}, {"v": "Date(2017, 5, 25, 12, 0 ,0)", "f":null}, {"v": "Date(2017, 5, 25, 12, 5 ,0)", "f":null}]},'
+        print messStr
+
+
+    #mcafeeStr = '{"c":[{"v": "McAfee"}, {"v": null}, {"v": "<h2>/mcafee/event/tie/file/repchange/broadcast</h2><br>2017-05-23 13:08:25<br>{My Cool McAfee Message}"}, {"v": "Date(2017, 5, 25, 12, 0 ,0)", "f":null}, {"v": "Date(2017, 5, 25, 12, 5 ,0)", "f":null}]},'
+    #arubaStr = '{"c":[{"v": "Aruba"}, {"v": null}, {"v": "<h2>/aruba/event/clearpass/log</h2><br>{My Cool Aruba Message}"}, {"v": "Date(2017, 5, 25, 13, 0 ,0)"}, {"v": "Date(2017, 5, 25, 13, 5 ,0)"}]},'
+    #checkpointStr = '{"c":[{"v": "Check Point"}, {"v": null}, {"v": "<h2>/checkpoint/event/detection</h2><br>{My Cool Check Point Message}"}, {"v": "Date(2017, 5, 25, 14, 0 ,0)"}, {"v": "Date(2017, 5, 25, 14, 5 ,0)"}]}'
+
+    #messStr = mcafeeStr + arubaStr + checkpointStr
+    buildJsonStr = buildJsonStr + messStr + rowsEndStr
+
+   ### Get Events off DXL Bus
+    #def getEvents():
+    #    SERVICE_TOPIC = "/mcafee/event/tie/file/repchange/broadcast"
+        # Create the client
+    #    with DxlClient(config) as client:
+            # Connect to the fabric
+    #        client.connect()
+    #        class ChgRepCallback(EventCallback):
+    #            def on_event(self, event):
+                    # Extract
+    #                resultStr = json.loads(event.payload.decode())
+    #                print event.destination_topic
+    #                print resultStr
+    #                myJson = jsonify(
+    #                    topic=event.destination_topic,
+    #                    result=resultStr
+    #                )
+    #                yield 'Hi'
+    #                yield myJson
+
+    #        client.add_event_callback(SERVICE_TOPIC, ChgRepCallback())
+
+            #while True:
+            #    #yield flask.render_template('data.html', **myJson)
+            #    time.sleep(60)
+
+
+    #return Response(getEvents(), mimetype= 'text/event-stream')
+
+    def generate():
+        yield buildJsonStr
+
+    return Response(stream_with_context(generate()), mimetype= 'application/json')
 
 ## Convert from FireEye Severity to McAfee Reputation
 def fireeyeToMcAfee(sevStr):
@@ -593,4 +684,5 @@ def ping():
     return 'pong'
 
 if __name__ == '__main__':
+    #app.run(debug=True, port=5000, host='0.0.0.0')
     app.run()

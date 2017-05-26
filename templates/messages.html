@@ -1,15 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>McAfee DXL Bus</title>
-    <script src="static/d3/d3.js/d3.min.js"></script>
-    <script src="static/EventDrops/src/eventDrops.js"></script>
+
+<!--Load the AJAX API-->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript">
+
+    // Load the Visualization API and the piechart package.
+    // Sgoogle.charts.load('current', {'packages':['corechart']});
+
+    google.charts.load("current", {packages:["timeline"]});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var jsonData = $.ajax({
+            url: "/dxldata",
+            dataType: "jsonp",
+            async: false
+        }).responseText;
+
+        var container = document.getElementById('example3.1');
+        var chart = new google.visualization.Timeline(container);
+        var dataTable = new google.visualization.DataTable(jsonData);
+        var options = {
+            colors: ['#cbb69d', '#603913', '#c69c6e'],
+            timeline: { rowLabelStyle: {fontName: 'Helvetica', fontSize: 24, color: '#603913' },
+                barLabelStyle: { fontName: 'Garamond', fontSize: 14 } }
+        };
+        chart.draw(dataTable,options);
+    }
+</script>
+
 </head>
+
 <body>
-<h1>McAfee DXL Bus</h1>
-
-
-
+<div id="example3.1" style="height: 200px;"></div>
 </body>
 </html>
