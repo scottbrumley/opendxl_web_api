@@ -29,7 +29,7 @@
         var rowsEndStr = ']}';
         var buildJsonStr = startColStr + vendorStr + dummyLabelStr + toolTipStr + messStartStr + messStopStr + endColStr + rowsStartStr;
 
-        var dataTable = new google.visualization.DataTable(jsonData + rowsEndStr);
+        var dataTable = new google.visualization.DataTable(buildJsonStr + jsonData + rowsEndStr);
         var options = {
             colors: ['#cbb69d', '#603913', '#c69c6e'],
             timeline: { rowLabelStyle: {fontName: 'Helvetica', fontSize: 24, color: '#603913' },
