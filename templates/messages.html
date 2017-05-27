@@ -11,8 +11,8 @@
     google.charts.load('visualization', '1', {'packages':['corechart']});
 
     function drawChart(jsonData) {
-        console.log(pageData.timeline);
-        console.log("Draw Chart: " + jsonData);
+        //console.log(pageData.timeline);
+        //console.log("Draw Chart: " + jsonData);
 
         var container = document.getElementById('example3.1');
         var chart = new google.visualization.Timeline(container);
@@ -29,7 +29,10 @@
         var rowsEndStr = ']}';
         var buildJsonStr = startColStr + vendorStr + dummyLabelStr + toolTipStr + messStartStr + messStopStr + endColStr + rowsStartStr;
 
-        var dataTable = new google.visualization.DataTable(buildJsonStr + jsonData + rowsEndStr);
+        tableStr = buildJsonStr + jsonData + rowsEndStr;
+        console.log("Table Str: " + tableStr);
+
+        var dataTable = new google.visualization.DataTable(tableStr);
         var options = {
             colors: ['#cbb69d', '#603913', '#c69c6e'],
             timeline: { rowLabelStyle: {fontName: 'Helvetica', fontSize: 24, color: '#603913' },

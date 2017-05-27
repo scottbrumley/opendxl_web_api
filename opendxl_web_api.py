@@ -3,12 +3,13 @@
 # by their hashes)
 
 import base64
-import logging
+#import logging
 import os
 import sys
 import random
 import json, time, datetime
 from threading import Thread, Event
+import threading
 import eventlet
 eventlet.monkey_patch()
 
@@ -33,14 +34,14 @@ from common import *
 
 # Enable logging, this will also direct built-in DXL log messages.
 # See - https://docs.python.org/2/howto/logging-cookbook.html
-log_formatter = logging.Formatter('%(asctime)s %(name)s - %(levelname)s - %(message)s')
+#log_formatter = logging.Formatter('%(asctime)s %(name)s - %(levelname)s - %(message)s')
 
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(log_formatter)
+#console_handler = logging.StreamHandler()
+#console_handler.setFormatter(log_formatter)
 
-logger = logging.getLogger()
-logger.addHandler(console_handler)
-logger.setLevel(logging.INFO)
+#logger = logging.getLogger()
+#logger.addHandler(console_handler)
+#logger.setLevel(logging.INFO)
 
 ## DXL Client Configuration
 CONFIG_FILE_NAME = "./dxlclient.config"
@@ -105,6 +106,9 @@ def get_tie_file_reputation(client, md5_hex, sha1_hex):
 tiescoreMap = {0:'Not Set', 1:'Known Malicious', 15: 'Most Likely Malicious', 30: 'Might Be Malicious',50: 'Unknown',70:"Might Be Trusted",85: "Most Likely Trusted", 99: "Known Trusted",100: "Known Trusted Installer"}
 ## TIE Provider Map
 providerMap = {1:'GTI', 3:'Enterprise Reputation', 5:'ATD',7:"MWG"}
+
+## Message String
+messStr = ""
 
 ## Vendors Topic Dictionary
 vendorsDict = {}
@@ -306,6 +310,7 @@ def addVendorService(idStr, nameStr, topicStr ):
         vendorsDict[idStr] = {}
         vendorsDict[idStr]['name'] = nameStr
         vendorsDict[idStr]['topic'] = topicStr
+        vendorsDict[idStr]['message'] = ""
         return 1
     except:
         return 0
@@ -356,65 +361,73 @@ def getVendorId(topicStr):
     except:
         return ""
 
-class dxldata(Thread):
-    def __init__(self):
-        self.delay = 2
-        super(dxldata, self).__init__()
+class ChgRepCallback(EventCallback):
+    def on_event(self, event):
+        # Extract
+        resultStr = json.loads(event.payload.decode())
+        print "Topic: " + event.destination_topic
+        print resultStr
+        vendorId = getVendorId(event.destination_topic)
+        now = datetime.datetime.now()
+        later = now + datetime.timedelta(minutes = 5)
 
-    def getEvents(self):
-        testData = '{"cols": [{"id": "task", "label": "Employee Name", "type": "string"},{"id": "startDate","label": "Start Date", "type": "date"},{"id": "endDate", "label": "End Date", "type": "date"}],"rows": [{"c":[{"v": "Mike"}, {"v": "Date(2008, 1, 28)", "f":null}, {"v": "Date(2008, 1, 29)", "f":null}]},{"c":[{"v": "Bob"}, {"v": "Date(2007, 5, 1)"}, {"v": "Date(2007, 5, 2)"}]},{"c":[{"v": "Alice"}, {"v": "Date(2006, 7, 16)"}, {"v": "Date(2006, 7, 17)"}]}'
-        ## Get Events off DXL Bus
-        #SERVICE_TOPIC = "/mcafee/event/tie/file/repchange/broadcast"
-        # Create the client
-        #with DxlClient(config) as client:
-        #    # Connect to the fabric
-        #     client.connect()
-        #     class ChgRepCallback(EventCallback):
-        #         def on_event(self, event):
-        #             # Extract
-        #             resultStr = json.loads(event.payload.decode())
-        #             print event.destination_topic
-        #             print resultStr
-
-        #             vendorId = getVendorId(event.destination_topic)
-        #             startTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        #             endTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        startTime = now.strftime("%Y,%m,%d,%H,%M,%S")
+        endTime = later.strftime("%Y,%m,%d,%H,%M,%S")
 
         #             messStr = "{'data':'Hi There'}"
-                     #messStr = '{"c":[{"v": "' + getVendorName(vendorId) + '"}, {"v": null}, {"v": "<h2>' + event.destination_topic + '</h2><br>' + startTime + '<br>' + resultStr + '"}, {"v": "Date(2017, 5, 25, 12, 0 ,0)", "f":null}, {"v": "Date(2017, 5, 25, 12, 5 ,0)", "f":null}]},'
+        vendorsDict[vendorId]['message'] = '{"c":[{"v": "' + getVendorName(vendorId) + '"}, {"v": null}, {"v": "<h2>' + event.destination_topic + '</h2><br>' + startTime + '<br>' + str(resultStr) + '"}, {"v": "Date(' + startTime + ')", "f":null}, {"v": "Date(' + endTime + ')", "f":null}]},'
 
-        #             print messStr
-                     ## Send JSON
+        print "Mess String: " + vendorsDict[vendorId]['message']
+        ## Send JSON
         #             socketio.emit("my_response", {'data':'Hi There'} , namespace='/test')
-        #             socketio.emit("my_response",messStr, namespace='/test')
+        socketio.emit("my_response", {'data': vendorsDict[vendorId]['message']}, namespace='/test')
 
-        #     client.add_event_callback(SERVICE_TOPIC, ChgRepCallback())
+def dxldata():
+#    def __init__(self):
+#        self.delay = 2
+#        super(dxldata, self).__init__()
 
-        while not thread_stop_event.isSet():
-            socketio.emit("my_response", {'data': testData} , namespace='/test')
-            time.sleep(self.delay)
-    def run(self):
-        self.getEvents()
+#    def getEvents(self):
+        #testData = '{"c":[{"v": "Mike"}, {"v": "Date(2008, 1, 28)", "f":null}, {"v": "Date(2008, 1, 29)", "f":null}]},{"c":[{"v": "Bob"}, {"v": "Date(2007, 5, 1)"}, {"v": "Date(2007, 5, 2)"}]},{"c":[{"v": "Alice"}, {"v": "Date(2006, 7, 16)"}, {"v": "Date(2006, 7, 17)"}'
+        ## Get Events off DXL Bus
 
-class RandomThread(Thread):
+
+        #while not thread_stop_event.isSet():
+        while True:
+            #socketio.emit("my_response", {'data': messStr} , namespace='/test')
+            time.sleep(60)
+
+ #   def run(self):
+ #       self.getEvents()
+
+class dxlWait(Thread):
     def __init__(self):
         self.delay = 1
-        super(RandomThread, self).__init__()
+        super(dxlWait, self).__init__()
 
     def getEvents(self):
         """
         Generate a random number every 1 second and emit to a socketio instance (broadcast)
         Ideally to be run in a separate thread?
         """
-        #infinite loop of magical random numbers
-        #rand=random.Random()
-        print "Making random numbers"
-        while not thread_stop_event.isSet():
-            #number = round(rand.random()*10, 3)
-            #print number
-            #socketio.emit('newnumber', {'number': number}, namespace='/test')
-            socketio.emit("my_response", {'data':'Hi There'} , namespace='/test')
-            time.sleep(self.delay)
+
+        SERVICE_TOPIC = "/mcafee/event/tie/file/repchange/broadcast"
+        #SERVICE_TOPIC = "/mcafee/#"
+        # Create the client
+        with DxlClient(config) as client:
+            # Connect to the fabric
+            client.connect()
+            client.add_event_callback(SERVICE_TOPIC, ChgRepCallback())
+
+            #infinite loop of magical random numbers
+            #rand=random.Random()
+            print "Making random numbers"
+            while not thread_stop_event.isSet():
+                #number = round(rand.random()*10, 3)
+                #print "Waiting on Events ..."
+                #socketio.emit('newnumber', {'number': number}, namespace='/test')
+                #socketio.emit("my_response", {'data':'Hi There'} , namespace='/test')
+                time.sleep(self.delay)
 
     def run(self):
         self.getEvents()
@@ -435,8 +448,7 @@ def test_connect():
 
     if not thread.isAlive():
         print "Starting Thread"
-        thread = dxldata()
-        #thread = RandomThread()
+        thread = dxlWait()
         thread.start()
 
 @socketio.on('disconnect', namespace='/test')
