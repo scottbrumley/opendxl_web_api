@@ -2,16 +2,15 @@
 # (TIE) DXL service to retrieve the the reputation of files (as identified
 # by their hashes)
 
-import logging
-import os
-import sys
-import json
 import base64
 import logging
 import os
 import sys
-import json, time
-import flask
+import random
+import json, time, datetime
+from threading import Thread, Event
+import eventlet
+eventlet.monkey_patch()
 
 
 from dxlclient.callbacks import EventCallback
@@ -23,13 +22,10 @@ from dxltieclient import TieClient
 from dxltieclient.constants import HashType, TrustLevel, FileProvider, ReputationProp, CertProvider, CertReputationProp, CertReputationOverriddenProp
 
 from flask import Flask
-from flask import Response
 from flask import render_template
-from flask import request
 from flask import jsonify
 from flask import stream_with_context, request, Response
-from flask_socketio import SocketIO
-from flask_socketio import send, emit
+from flask_socketio import SocketIO, emit
 
 # Import common logging and configuration
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/..")
@@ -110,6 +106,9 @@ tiescoreMap = {0:'Not Set', 1:'Known Malicious', 15: 'Most Likely Malicious', 30
 ## TIE Provider Map
 providerMap = {1:'GTI', 3:'Enterprise Reputation', 5:'ATD',7:"MWG"}
 
+## Vendors Topic Dictionary
+vendorsDict = {}
+
 # Set this variable to "threading", "eventlet" or "gevent" to test the
 # different async modes, or leave it set to None for the application to choose
 # the best option based on installed packages.
@@ -117,9 +116,9 @@ async_mode = None
 
 ## Start Web API
 app = Flask(__name__)
-#socketio = SocketIO(app)
-socketio = SocketIO(app, async_mode=async_mode)
-thread = None
+socketio = SocketIO(app, async_mode="eventlet")
+thread = Thread()
+thread_stop_event = Event()
 
 ##### About #####
 @app.route('/about')
@@ -302,125 +301,147 @@ def getFileRep():
         else:
             return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, propList=propList,action="getfile",json=json)
 
-def background_thread():
-    """Example of how to send server generated events to clients."""
-    count = 0
-    while True:
-        socketio.sleep(10)
-        count += 1
-        socketio.emit('my_response',
-                      {'data': 'Server generated event', 'count': count},
-                      namespace='/test')
+def addVendorService(idStr, nameStr, topicStr ):
+    try:
+        vendorsDict[idStr] = {}
+        vendorsDict[idStr]['name'] = nameStr
+        vendorsDict[idStr]['topic'] = topicStr
+        return 1
+    except:
+        return 0
 
-def dxldata():
-    vendorsDict = {}
+def delVendorService(idStr):
+    try:
+        del vendorsDict[idStr]
+        return 1
+    except:
+        return 0
 
-    ## Add Vendors to Dictionary
-    vendorsDict['mcafeetie'] = {}
-    vendorsDict['arubacp'] = {}
-    vendorsDict['checkpointfw'] = {}
+def chgVendorService(idStr, nameStr, topicStr):
+    try:
+        if nameStr != vendorsDict[idStr]['name']:
+            vendorsDict[idStr]['name'] = nameStr
+        if nameStr != vendorsDict[idStr]['topic']:
+            vendorsDict[idStr]['topic'] = topicStr
+        return 1
+    except:
+        return 0
 
-    ## Vendor Service Names
-    vendorsDict['mcafeetie']['name'] = "McAfee TIE"
-    vendorsDict['arubacp']['name'] = "Aruba Clear Pass"
-    vendorsDict['checkpointfw']['name'] = "Check Point Firewall"
+def getVendorTopic(idStr):
+    try:
+        return vendorsDict[idStr]['topic']
+    except:
+        return ""
 
-    ## Vendor Service Topic
-    vendorsDict['mcafeetie']['topic'] = "/mcafee/event/tie/file/repchange/broadcast"
-    vendorsDict['arubacp']['topic'] = "/aruba/event/clearpass/log"
-    vendorsDict['checkpointfw']['topic'] = "/checkpoint/event/detection"
+def getVendorName(idStr):
+    try:
+        return vendorsDict[idStr]['name']
+    except:
+        return ""
 
-    ## Vendor Messages
-    vendorsDict['mcafeetie']['message'] = "{My Cool McAfee Message}"
-    vendorsDict['arubacp']['message'] = "{My Cool Aruba Message}"
-    vendorsDict['checkpointfw']['message'] = "{My Cool Check Point Message}"
+def getVendorList():
+    vendorLst = []
+    try:
+        for vendor in vendorsDict:
+            vendorLst.append(vendor)
+        return vendorLst
+    except:
+        return []
 
+def getVendorId(topicStr):
+    try:
+        for key, vendors in vendorsDict.iteritems():
+            if vendors["topic"] == topicStr:
+                return key
+    except:
+        return ""
 
-    startColStr = '{"cols": ['
-    vendorStr = '{"id": "task", "label": "Vendor name", "type": "string" },'
-    dummyLabelStr = '{"type": "string", "id": "dummy bar label"},'
-    toolTipStr = '{"type": "string", "role": "tooltip", "p": {"html": true} },'
-    messStartStr = '{"id": "startDate","label": "Start Date", "type": "date"},'
-    messStopStr = '{"id": "endDate", "label": "End Date", "type": "date"}'
-    messStr = ''
-    endColStr = '],'
-    rowsStartStr = '"rows": ['
-    rowsEndStr = ']}'
-    buildJsonStr = startColStr + vendorStr + dummyLabelStr + toolTipStr + messStartStr + messStopStr + endColStr + rowsStartStr
+class dxldata(Thread):
+    def __init__(self):
+        self.delay = 2
+        super(dxldata, self).__init__()
 
-    #for vendors in vendorsDict:
-    #    print "Name: " + vendorsDict[vendors]["name"]
-    #    print "Topic: " + vendorsDict[vendors]["topic"]
-    #    print "Message: " + vendorsDict[vendors]["message"]
-    #    messStr = messStr + '{"c":[{"v": "' + vendorsDict[vendors]["name"] + '"}, {"v": null}, {"v": "<h2>' + vendorsDict[vendors]["topic"] + '</h2><br>2017-05-23 13:08:25<br>' + vendorsDict[vendors]["message"] + '"}, {"v": "Date(2017, 5, 25, 12, 0 ,0)", "f":null}, {"v": "Date(2017, 5, 25, 12, 5 ,0)", "f":null}]}'
+    def getEvents(self):
+        testData = '{"cols": [{"id": "task", "label": "Employee Name", "type": "string"},{"id": "startDate","label": "Start Date", "type": "date"},{"id": "endDate", "label": "End Date", "type": "date"}],"rows": [{"c":[{"v": "Mike"}, {"v": "Date(2008, 1, 28)", "f":null}, {"v": "Date(2008, 1, 29)", "f":null}]},{"c":[{"v": "Bob"}, {"v": "Date(2007, 5, 1)"}, {"v": "Date(2007, 5, 2)"}]},{"c":[{"v": "Alice"}, {"v": "Date(2006, 7, 16)"}, {"v": "Date(2006, 7, 17)"}]}'
+        ## Get Events off DXL Bus
+        #SERVICE_TOPIC = "/mcafee/event/tie/file/repchange/broadcast"
+        # Create the client
+        #with DxlClient(config) as client:
+        #    # Connect to the fabric
+        #     client.connect()
+        #     class ChgRepCallback(EventCallback):
+        #         def on_event(self, event):
+        #             # Extract
+        #             resultStr = json.loads(event.payload.decode())
+        #             print event.destination_topic
+        #             print resultStr
 
-    mcafeeStr = '{"c":[{"v": "McAfee"}, {"v": null}, {"v": "<h2>/mcafee/event/tie/file/repchange/broadcast</h2><br>2017-05-23 13:08:25<br>{My Cool McAfee Message}"}, {"v": "Date(2017, 5, 25, 12, 0 ,0)", "f":null}, {"v": "Date(2017, 5, 25, 12, 5 ,0)", "f":null}]},'
-    arubaStr = '{"c":[{"v": "Aruba"}, {"v": null}, {"v": "<h2>/aruba/event/clearpass/log</h2><br>{My Cool Aruba Message}"}, {"v": "Date(2017, 5, 25, 13, 0 ,0)"}, {"v": "Date(2017, 5, 25, 13, 5 ,0)"}]},'
-    checkpointStr = '{"c":[{"v": "Check Point"}, {"v": null}, {"v": "<h2>/checkpoint/event/detection</h2><br>{My Cool Check Point Message}"}, {"v": "Date(2017, 5, 25, 14, 0 ,0)"}, {"v": "Date(2017, 5, 25, 14, 5 ,0)"}]}'
+        #             vendorId = getVendorId(event.destination_topic)
+        #             startTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        #             endTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    messStr = mcafeeStr + arubaStr + checkpointStr
+        #             messStr = "{'data':'Hi There'}"
+                     #messStr = '{"c":[{"v": "' + getVendorName(vendorId) + '"}, {"v": null}, {"v": "<h2>' + event.destination_topic + '</h2><br>' + startTime + '<br>' + resultStr + '"}, {"v": "Date(2017, 5, 25, 12, 0 ,0)", "f":null}, {"v": "Date(2017, 5, 25, 12, 5 ,0)", "f":null}]},'
 
-    # Remove the last comma
-    #messStr = messStr[:-1]
-    buildJsonStr = buildJsonStr + messStr + rowsEndStr
+        #             print messStr
+                     ## Send JSON
+        #             socketio.emit("my_response", {'data':'Hi There'} , namespace='/test')
+        #             socketio.emit("my_response",messStr, namespace='/test')
 
-    ## Get Events off DXL Bus
-    # def getEvents():
-    #     SERVICE_TOPIC = "/mcafee/event/tie/file/repchange/broadcast"
-    #    # Create the client
-    #     with DxlClient(config) as client:
-    #        # Connect to the fabric
-    #         client.connect()
-    #         class ChgRepCallback(EventCallback):
-    #             def on_event(self, event):
-    #                 # Extract
-    #                 resultStr = json.loads(event.payload.decode())
-    #                 print event.destination_topic
-    #                 print resultStr
-    #                 myJson = jsonify(
-    #                     topic=event.destination_topic,
-    #                     result=resultStr
-    #                 )
-    #                 #yield myJson
-    #                 #send(myJson, json=True)
+        #     client.add_event_callback(SERVICE_TOPIC, ChgRepCallback())
 
-    #         client.add_event_callback(SERVICE_TOPIC, ChgRepCallback())
+        while not thread_stop_event.isSet():
+            socketio.emit("my_response", {'data': testData} , namespace='/test')
+            time.sleep(self.delay)
+    def run(self):
+        self.getEvents()
 
-    #         while True:
-    #             #yield flask.render_template('data.html', **myJson)
-    #             time.sleep(60)
+class RandomThread(Thread):
+    def __init__(self):
+        self.delay = 1
+        super(RandomThread, self).__init__()
 
+    def getEvents(self):
+        """
+        Generate a random number every 1 second and emit to a socketio instance (broadcast)
+        Ideally to be run in a separate thread?
+        """
+        #infinite loop of magical random numbers
+        #rand=random.Random()
+        print "Making random numbers"
+        while not thread_stop_event.isSet():
+            #number = round(rand.random()*10, 3)
+            #print number
+            #socketio.emit('newnumber', {'number': number}, namespace='/test')
+            socketio.emit("my_response", {'data':'Hi There'} , namespace='/test')
+            time.sleep(self.delay)
 
-    # return Response(getEvents(), mimetype= 'text/event-stream')
-
-    #@socketio.on('json')
-    #def handle_json(json):
-    #    send(json, json=True)
-    print buildJsonStr
-    count = 0
-    #socketio.emit('my_response',
-    #              buildJsonStr,
-    #              namespace='/test')
-
-    socketio.emit("my_response",buildJsonStr, namespace='/test')
+    def run(self):
+        self.getEvents()
 
 ### Route for dxl
 @app.route('/dxl/')
-def busMessages():
+def dxlMessages():
     return render_template('messages.html')
 
 @socketio.on('connect', namespace='/test')
 def test_connect():
     global thread
-    if thread is None:
-        thread = socketio.start_background_task(target=dxldata)
-    #emit('my_response', {'data': 'Connected', 'count': 0})
+    print('Client connected')
+
+    addVendorService('mcafeetie','McAfee TIE','/mcafee/event/tie/file/repchange/broadcast')
+    addVendorService('arubacp','Aruba ClearPass','/aruba/event/clearpass/log')
+    addVendorService('checkpointfw','Check Point Firewall','/checkpoint/event/detection')
+
+    if not thread.isAlive():
+        print "Starting Thread"
+        thread = dxldata()
+        #thread = RandomThread()
+        thread.start()
 
 @socketio.on('disconnect', namespace='/test')
 def test_disconnect():
     print('Client disconnected')
-
-
 
 ## Convert from FireEye Severity to McAfee Reputation
 def fireeyeToMcAfee(sevStr):
