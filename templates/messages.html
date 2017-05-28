@@ -3,12 +3,18 @@
 
 <!--Load the AJAX API-->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
 <script type="text/javascript" charset="utf-8">
     var pageData = {};
 
-    google.charts.load('visualization', '1', {'packages':['corechart']});
+
+
+    //google.charts.load('visualization', '1', {'packages':['corechart']});
+    google.charts.load("current", {packages:["timeline"]});
 
     function drawChart(jsonData) {
         //console.log(pageData.timeline);
@@ -29,7 +35,7 @@
         var rowsEndStr = ']}';
         var buildJsonStr = startColStr + vendorStr + dummyLabelStr + toolTipStr + messStartStr + messStopStr + endColStr + rowsStartStr;
 
-        tableStr = buildJsonStr + jsonData + rowsEndStr;
+        tableStr = buildJsonStr + pageData.timeline + rowsEndStr;
         console.log("Table Str: " + tableStr);
 
         var dataTable = new google.visualization.DataTable(tableStr);
@@ -47,18 +53,34 @@
         //}).responseText;
     };
 
-    $(document).ready(function(){
-        google.charts.load("current", {packages:["timeline"]});
+    function setOnLoadCallback(){
         var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
 
-        socket.on('my_response', function(msg) {
+        socket.on('timeline', function(msg) {
             //$('#log').append('<p>Received 11: ' + msg + '</p>');
             console.log("Document Ready: " + msg.data);
-            pageData.timeline = msg.data;
+
+            if (typeof(pageData.timeline) == "undefined") {
+                pageData.timeline = msg.data;
+            } else {
+                pageData.timeline = pageData.timeline + ", " + msg.data;
+            }
             pageData.head = "Response";
-            google.charts.setOnLoadCallback(drawChart(msg.data));
+            //google.charts.setOnLoadCallback(drawChart(msg.data));
+            drawChart(msg.data)
         });
+    }
+
+
+    $(window).load(function(){
+        //setOnLoadCallback()
     });
+
+    $(document).ready(function(){
+
+    });
+
+
     //});
 
 
@@ -67,6 +89,8 @@
 </head>
 
 <body>
+<h2>DXL Real-Time</h2>
+<script>setOnLoadCallback()</script>
 <div id="example3.1" style="height: 200px;"></div>
 </body>
 </html>

@@ -14,10 +14,11 @@ import eventlet
 eventlet.monkey_patch()
 
 
-from dxlclient.callbacks import EventCallback
+from dxlclient.callbacks import EventCallback, RequestCallback
 from dxlclient.client import DxlClient
 from dxlclient.client_config import DxlClientConfig
 from dxlclient.message import Message, Request
+from dxlclient.service import ServiceRegistrationInfo
 
 from dxltieclient import TieClient
 from dxltieclient.constants import HashType, TrustLevel, FileProvider, ReputationProp, CertProvider, CertReputationProp, CertReputationOverriddenProp
@@ -366,39 +367,37 @@ class ChgRepCallback(EventCallback):
         # Extract
         resultStr = json.loads(event.payload.decode())
         print "Topic: " + event.destination_topic
-        print resultStr
+        #print resultStr
         vendorId = getVendorId(event.destination_topic)
+
         now = datetime.datetime.now()
         later = now + datetime.timedelta(minutes = 5)
-
+        eventTime = now.strftime("%Y-%m-%d %H:%M:%S")
         startTime = now.strftime("%Y,%m,%d,%H,%M,%S")
         endTime = later.strftime("%Y,%m,%d,%H,%M,%S")
 
         #             messStr = "{'data':'Hi There'}"
-        vendorsDict[vendorId]['message'] = '{"c":[{"v": "' + getVendorName(vendorId) + '"}, {"v": null}, {"v": "<h2>' + event.destination_topic + '</h2><br>' + startTime + '<br>' + str(resultStr) + '"}, {"v": "Date(' + startTime + ')", "f":null}, {"v": "Date(' + endTime + ')", "f":null}]},'
+        #if len(vendorsDict[vendorId]['message']) > 0:
+        #    vendorsDict[vendorId]['message'] = vendorsDict[vendorId]['message'] + ', ' + '{"c":[{"v": "' + getVendorName(vendorId) + '"}, {"v": null}, {"v": "<h2>' + event.destination_topic + '</h2><br>' + eventTime + '<br>' + str(resultStr) + '"}, {"v": "Date(' + startTime + ')", "f":null}, {"v": "Date(' + endTime + ')", "f":null}]}'
+        #else:
 
-        print "Mess String: " + vendorsDict[vendorId]['message']
+        lastMessage = vendorsDict[vendorId]['message']
+        vendorsDict[vendorId]['message'] = '{"c":[{"v": "' + getVendorName(vendorId) + '"}, {"v": null}, {"v": "<h2>' + event.destination_topic + '</h2><br>' + eventTime + '<br>' + str(resultStr) + '"}, {"v": "Date(' + startTime + ')", "f":null}, {"v": "Date(' + endTime + ')", "f":null}]}'
+
+        #print "Mess String: " + vendorsDict[vendorId]['message']
         ## Send JSON
         #             socketio.emit("my_response", {'data':'Hi There'} , namespace='/test')
-        socketio.emit("my_response", {'data': vendorsDict[vendorId]['message']}, namespace='/test')
+        if (isDup(event.destination_topic, lastMessage)):
+            print "Dup Message Found.  Not Sending."
+        else:
+            socketio.emit("timeline", {'data': vendorsDict[vendorId]['message']}, namespace='/test')
 
-def dxldata():
-#    def __init__(self):
-#        self.delay = 2
-#        super(dxldata, self).__init__()
-
-#    def getEvents(self):
-        #testData = '{"c":[{"v": "Mike"}, {"v": "Date(2008, 1, 28)", "f":null}, {"v": "Date(2008, 1, 29)", "f":null}]},{"c":[{"v": "Bob"}, {"v": "Date(2007, 5, 1)"}, {"v": "Date(2007, 5, 2)"}]},{"c":[{"v": "Alice"}, {"v": "Date(2006, 7, 16)"}, {"v": "Date(2006, 7, 17)"}'
-        ## Get Events off DXL Bus
-
-
-        #while not thread_stop_event.isSet():
-        while True:
-            #socketio.emit("my_response", {'data': messStr} , namespace='/test')
-            time.sleep(60)
-
- #   def run(self):
- #       self.getEvents()
+def isDup(topicStr, message):
+    vendorId = getVendorId(topicStr)
+    if (message == vendorsDict[vendorId]['message']):
+        return True
+    else:
+        return False
 
 class dxlWait(Thread):
     def __init__(self):
@@ -407,26 +406,36 @@ class dxlWait(Thread):
 
     def getEvents(self):
         """
-        Generate a random number every 1 second and emit to a socketio instance (broadcast)
-        Ideally to be run in a separate thread?
+        Get Events off the DXL fabric
         """
 
-        SERVICE_TOPIC = "/mcafee/event/tie/file/repchange/broadcast"
-        #SERVICE_TOPIC = "/mcafee/#"
+        ## Create Web API request queue
+        SERVICE_TYPE = "/opendxl/webapi"
+        REQUEST_TOPIC = SERVICE_TYPE + "/requests"
+
+        class MyRequestCallback(RequestCallback):
+            def on_request(self, request):
+                # Extract
+                print "Service recieved request payload: " + request.payload.decode()
+
         # Create the client
         with DxlClient(config) as client:
             # Connect to the fabric
             client.connect()
-            client.add_event_callback(SERVICE_TOPIC, ChgRepCallback())
 
-            #infinite loop of magical random numbers
-            #rand=random.Random()
-            print "Making random numbers"
+            ## Register with ePO and add the request topic
+            info = ServiceRegistrationInfo(client, SERVICE_TYPE)
+            client.register_service_sync(info, 10)
+            info.add_topic(REQUEST_TOPIC, MyRequestCallback())
+
+            ## Get list of vendorIDs and subscribe to each topic
+            vendorList = getVendorList()
+            for vendor in vendorList:
+                client.add_event_callback(vendorsDict[vendor]['topic'], ChgRepCallback())
+
+            ## Listent to Events
+            print "Listening for Events"
             while not thread_stop_event.isSet():
-                #number = round(rand.random()*10, 3)
-                #print "Waiting on Events ..."
-                #socketio.emit('newnumber', {'number': number}, namespace='/test')
-                #socketio.emit("my_response", {'data':'Hi There'} , namespace='/test')
                 time.sleep(self.delay)
 
     def run(self):
@@ -443,8 +452,23 @@ def test_connect():
     print('Client connected')
 
     addVendorService('mcafeetie','McAfee TIE','/mcafee/event/tie/file/repchange/broadcast')
+    addVendorService('mcafeeepo','McAfee ePO','/mcafee/event/epo/command/log')
+    addVendorService('mcafeemar','McAfee MAR','/mcafee/mar/agent/query/all')
     addVendorService('arubacp','Aruba ClearPass','/aruba/event/clearpass/log')
     addVendorService('checkpointfw','Check Point Firewall','/checkpoint/event/detection')
+    addVendorService('scotto','Cool Queue','/scottbrumley/sample/basicevent')
+
+    vendorIdStr = "Test"
+    topicStr = "Topic"
+    resultStr = ""
+    now = datetime.datetime.now()
+    later = now + datetime.timedelta(minutes = 1)
+    eventTime = now.strftime("%Y-%m-%d %H:%M:%S")
+    startTime = now.strftime("%Y,%m,%d,%H,%M,%S")
+    endTime = later.strftime("%Y,%m,%d,%H,%M,%S")
+
+    startMess = '{"c":[{"v": "' + vendorIdStr + '"}, {"v": null}, {"v": "<h2>' + topicStr + '</h2><br>' + eventTime + '<br>' + str(resultStr) + '"}, {"v": "Date(' + startTime + ')", "f":null}, {"v": "Date(' + endTime + ')", "f":null}]}'
+    #socketio.emit("my_response", {'data': startMess} , namespace='/test')
 
     if not thread.isAlive():
         print "Starting Thread"
