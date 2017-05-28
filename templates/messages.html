@@ -11,16 +11,30 @@
 <script type="text/javascript" charset="utf-8">
     var pageData = {};
 
-
-
-    //google.charts.load('visualization', '1', {'packages':['corechart']});
+    google.charts.load('visualization', '1', {'packages':['corechart']});
     google.charts.load("current", {packages:["timeline"]});
 
-    function drawChart(jsonData) {
-        //console.log(pageData.timeline);
-        //console.log("Draw Chart: " + jsonData);
+    function drawDognut() {
+        var countList = [['Message', 'Message Cumulative']];
+        countList.push(['McAfee TIE',     11]);
+        countList.push(['FireEye',      2]);
+        countList.push(['Aruba Clear Pass',  2]);
 
-        var container = document.getElementById('example3.1');
+        var data = google.visualization.arrayToDataTable(pageData.count);
+
+        var options = {
+            title: 'Messages By Vendor Service',
+            is3D: true,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+        chart.draw(data, options);
+    }
+
+    function drawTimeLine() {
+        //console.log(pageData.timeline);
+
+        var container = document.getElementById('dxltimeline');
         var chart = new google.visualization.Timeline(container);
 
         var startColStr = '{"cols": [';
@@ -36,7 +50,7 @@
         var buildJsonStr = startColStr + vendorStr + dummyLabelStr + toolTipStr + messStartStr + messStopStr + endColStr + rowsStartStr;
 
         tableStr = buildJsonStr + pageData.timeline + rowsEndStr;
-        console.log("Table Str: " + tableStr);
+        //console.log("Table Str: " + tableStr);
 
         var dataTable = new google.visualization.DataTable(tableStr);
         var options = {
@@ -55,10 +69,11 @@
 
     function setOnLoadCallback(){
         var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
+        //var socket2 = io.connect('http://' + document.domain + ':' + location.port + '/test');
 
         socket.on('timeline', function(msg) {
             //$('#log').append('<p>Received 11: ' + msg + '</p>');
-            console.log("Document Ready: " + msg.data);
+            //console.log("Document Ready: " + msg.data);
 
             if (typeof(pageData.timeline) == "undefined") {
                 pageData.timeline = msg.data;
@@ -66,9 +81,41 @@
                 pageData.timeline = pageData.timeline + ", " + msg.data;
             }
             pageData.head = "Response";
-            //google.charts.setOnLoadCallback(drawChart(msg.data));
-            drawChart(msg.data)
+            //google.charts.setOnLoadCallback(drawTimeLine(msg.data));
+            drawTimeLine(msg.data);
         });
+
+
+        socket.on('count', function(msg) {
+            foundStr = false;
+            //$('#log').append('<p>Received 11: ' + msg + '</p>');
+            console.log("Document Ready: " + msg.data);
+
+            if (typeof(pageData.count) == "undefined") {
+                pageData.count = [['Message', 'Message Cumulative']];
+                pageData.count.push(msg.data);
+            } else {
+
+                // Read message into variable to work with
+                msgChg = msg.data;
+
+                // Search pageData.count for existing entry and change if exists
+                for (var i = 0; i <pageData.count.length; i++) {
+                    if(pageData.count[i][0] == msgChg[0]){
+                        pageData.count[msgChg[0]] = msgChg[1];
+                        foundStr = true;
+                        break;
+                    }
+                }
+
+                // If not found then add new entry
+                if (foundStr == false){
+                    pageData.count.push(msg.data);
+                }
+            }
+            drawDognut();
+        });
+
     }
 
 
@@ -89,8 +136,10 @@
 </head>
 
 <body>
+<h2>DXL Message Count</h2>
+<div id="piechart_3d" style="width: 900px; height: 500px;"></div>
 <h2>DXL Real-Time</h2>
 <script>setOnLoadCallback()</script>
-<div id="example3.1" style="height: 200px;"></div>
+<div id="dxltimeline" style="height: 200px;"></div>
 </body>
 </html>

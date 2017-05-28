@@ -311,6 +311,7 @@ def addVendorService(idStr, nameStr, topicStr ):
         vendorsDict[idStr] = {}
         vendorsDict[idStr]['name'] = nameStr
         vendorsDict[idStr]['topic'] = topicStr
+        vendorsDict[idStr]['count'] = 0
         vendorsDict[idStr]['message'] = ""
         return 1
     except:
@@ -390,7 +391,11 @@ class ChgRepCallback(EventCallback):
         if (isDup(event.destination_topic, lastMessage)):
             print "Dup Message Found.  Not Sending."
         else:
+            # Add 1 to message Count
+            vendorsDict[vendorId]['count'] += 1
+            vendorCount = [vendorsDict[vendorId]['name'],     vendorsDict[vendorId]['count']]
             socketio.emit("timeline", {'data': vendorsDict[vendorId]['message']}, namespace='/test')
+            socketio.emit("count", {'data': vendorCount}, namespace='/test')
 
 def isDup(topicStr, message):
     vendorId = getVendorId(topicStr)
