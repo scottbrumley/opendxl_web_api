@@ -452,7 +452,7 @@ def test_connect():
     print('Client connected')
 
     addVendorService('mcafeetie','McAfee TIE','/mcafee/event/tie/file/repchange/broadcast')
-    addVendorService('mcafeeepo','McAfee ePO','/mcafee/event/epo/command/log')
+    addVendorService('mcafeeepo','McAfee ePO','/mcafee/event/epo/dxl/compinfo/response')
     addVendorService('mcafeemar','McAfee MAR','/mcafee/mar/agent/query/all')
     addVendorService('arubacp','Aruba ClearPass','/aruba/event/clearpass/log')
     addVendorService('checkpointfw','Check Point Firewall','/checkpoint/event/detection')
