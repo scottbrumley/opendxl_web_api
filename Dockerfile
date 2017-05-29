@@ -1,6 +1,6 @@
 FROM sbrumley/opendxl:0.1.1
 
-RUN apk add --no-cache bash wget git
+RUN apk add --no-cache bash wget git gcc linux-headers musl-dev
 
 ADD scripts/common.sh scripts/common.sh
 ADD scripts/bootstrap.sh scripts/bootstrap.sh
@@ -21,7 +21,12 @@ RUN apk del git
 RUN echo "Installing Python Common"
 RUN pip install common
 
+## Clean UP
+#RUN apk del git gcc linux-headers musl-dev
+
 RUN pip install Flask
+RUN pip install flask-socketio
+RUN pip install eventlet
 ## Setup Flask Environment
 ENV FLASK_APP=/opendxl_web_api.py
 
