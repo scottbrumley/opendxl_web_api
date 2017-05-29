@@ -32,67 +32,33 @@ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -
 
 ### Fireeye JSON example
 ```
-{"msg": "extended", "product": "Web MPS", "version": "7.7.0.123456", "appliance": "fireeye.foo.bar", "appliance-id": "00:11:11:11:11:11",
-"alert": [
 {
-  "src": {
-    "ip": "10.1.2.3",
-    "host": "internalclient.intra.net",
-    "vlan": "0", 
-    "mac": "00:24:aa:aa:aa:aa"
-  }, 
-  "severity": "minr", 
-  "alert-url": "https://fireeye.foo.bar/event_stream/events_for_bot?ma_id=12345678",
-  "explanation": {
-    "malware-detected": {
-      "malware": {
-        "profile": "win7x64-sp1", 
-        "http-header": "POST http://malicious.com",
-        "name": "Misc.Eicar-Test-File",
-        "md5sum": "44d88612fea8a8f36de82e1278abb02f",
-        "executed-at": "2016-01-19T08:30:21Z", 
-        "application": "Windows Explorer", 
-        "type": "exe", 
-        "original": "driver.exe",
-        "stype": "24"
+  "product": "MAS",
+  "appliance-id": "00:00:00:00:00:00",
+  "appliance": "fireeye-000000",
+  "alert": {
+    "src": {
+      "url": "/data/share/winxp-sp3/src/41281428cd6f503f948e931d546e340c.exe"
+    },
+    "severity": "majr",
+    "alert-url": "https://fireeye-000000/malware_analysis/analyses?maid=146658",
+    "explanation": {
+      "malware-detected": {
+        "malware": {
+          "malicious": "yes",
+          "executed-at": "2017-05-09T14:30:25Z",
+          "md5sum": "41281428cd6f503f948e931d546e340c",
+          "type": "exe",
+          "name": "Trojan.LuminosityLink"
+        }
       }
     },
-    "protocol": "", 
-    "analysis": "binary",
-    "cnc-services": {
-      "cnc-service": [
-        {
-          "protocol": "tcp",
-          "port": "4143",
-          "channel": "\\\\026\\\\003\\\\001",
-          "address": "198.50.234.211"
-        },
-        {
-          "protocol": "tcp",
-          "port": "9943",
-          "channel": "\\\\026\\\\003\\\\001",
-          "address": "80.96.150.201"
-        },
-        {
-          "protocol": "tcp",
-          "port": "4493",
-          "channel": "\\\\026\\\\003\\\\001",
-          "address": "1.179.170.7"
-        }
-      ]
-    },
-    "anomaly": "98816"
-  }, 
-  "occurred": "2016-01-20 09:30:21+00", 
-  "id": "12345678",
-  "action": "notified", 
-  "interface": {
-    "mode": "tap"
-  }, 
-  "dst": {
-    "ip": "10.1.2.4",
-    "mac": "00:24:bb:bb:bb:bb"
-  }, 
-  "name": "malware-object"
-}]}
+    "occurred": "2017-05-09T14:30:25Z",
+    "action": "notified",
+    "id": "146658",
+    "name": "malware-object"
+  },
+  "version": "7.7.5.577562",
+  "msg": "concise"
+}
 ```
