@@ -14,13 +14,15 @@
     google.charts.load('visualization', '1', {'packages':['corechart']});
     google.charts.load("current", {packages:["timeline"]});
 
-    function drawDognut() {
-        var countList = [['Message', 'Message Cumulative']];
-        countList.push(['McAfee TIE',     11]);
-        countList.push(['FireEye',      2]);
-        countList.push(['Aruba Clear Pass',  2]);
+    function drawDougnut() {
+        var countList = [];
+        countList = pageData.count;
+        //var countList = [['Message', 'Message Cumulative']];
+        //countList.push(['McAfee TIE',     11]);
+        //countList.push(['FireEye',      2]);
+        //countList.push(['Aruba Clear Pass',  2]);
 
-        var data = google.visualization.arrayToDataTable(pageData.count);
+        var data = google.visualization.arrayToDataTable(countList);
 
         var options = {
             title: 'Messages By Vendor Service',
@@ -88,21 +90,17 @@
 
         socket.on('count', function(msg) {
             foundStr = false;
-            //$('#log').append('<p>Received 11: ' + msg + '</p>');
-            console.log("Document Ready: " + msg.data);
 
             if (typeof(pageData.count) == "undefined") {
                 pageData.count = [['Message', 'Message Cumulative']];
-                pageData.count.push(msg.data);
             } else {
 
                 // Read message into variable to work with
                 msgChg = msg.data;
 
-                // Search pageData.count for existing entry and change if exists
                 for (var i = 0; i <pageData.count.length; i++) {
                     if(pageData.count[i][0] == msgChg[0]){
-                        pageData.count[msgChg[0]] = msgChg[1];
+                        pageData.count[i][1] = msgChg[1];
                         foundStr = true;
                         break;
                     }
@@ -113,7 +111,7 @@
                     pageData.count.push(msg.data);
                 }
             }
-            drawDognut();
+            drawDougnut();
         });
 
     }
@@ -137,7 +135,7 @@
 
 <body>
 <h2>DXL Message Count</h2>
-<div id="piechart_3d" style="width: 900px; height: 500px;"></div>
+<div id="piechart_3d" style="width: 450px; height: 250px;"></div>
 <h2>DXL Real-Time</h2>
 <script>setOnLoadCallback()</script>
 <div id="dxltimeline" style="height: 200px;"></div>
