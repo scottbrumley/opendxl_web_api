@@ -9,6 +9,7 @@ fi
 
 export FLASK_PORT=5000   ## Configure Flask Port
 source /${ROOT_DIR}/tests/vars.sh
+source /${ROOT_DIR}/tests/changerep.sh
 
 ### Make sure Web Service Reponds with HTTP Code of 200
 function test_http_code {
@@ -144,9 +145,11 @@ function setWannaCryHashes {
 
 ### Begin Testing ###
 
-test_http_code
-test_sha1
-test_sha256
-test_fireEye
-setWannaCryHashes /${ROOT_DIR}/tests/wannacryhashes.txt
+test_http_code                      ## Test basic HTTP function and return 200 HTTP STATUS CODE
+test_sha1                           ## Test Getting a SHA1 hash reputation
+test_sha256                         ## Test Getting a SHA256 hash reputation
+test_fireEye                        ## Test Setting FireEye Reputation in TIE
+test_set unknown tzsync.exe         ## Test Setting File Reputation
+test_set known_trusted tzsync.exe   ## Test Setting File Reputation
+setWannaCryHashes /${ROOT_DIR}/tests/wannacryhashes.txt ## Set WanaCry File Hashes to known malicious
 echo "All Test Successful"
