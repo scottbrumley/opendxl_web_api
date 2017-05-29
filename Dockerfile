@@ -8,6 +8,7 @@ ADD scripts/service.sh scripts/service.sh
 ADD scripts/vars.sh scripts/vars.sh
 ADD monitor.config monitor.config
 ADD templates/ templates/
+
 ADD tests/ tests/
 
 ##  MY code
