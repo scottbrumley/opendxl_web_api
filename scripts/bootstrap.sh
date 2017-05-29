@@ -9,6 +9,7 @@ echo "Installing Flask ... "
 installFlask
 echo "Installing OpenDXL TIE"
 installOpenDXLTIEClient
+installFlaskSockets
 #installMARClient
 #installePOClient
 #buildCertsFolders
