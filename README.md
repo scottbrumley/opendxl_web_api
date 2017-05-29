@@ -32,6 +32,7 @@ The OpenDXL Web API was designed to allow the building of a scalable web tier.  
 * FireEye Notification set set TIE reputation with POST JSON
 * Generic set TIE reputation with GET request
 * Generic get TIE reputation with GET request
+* Real-Time DXL Bus Monitoring
 
 ## Features
 * Token Authentication
