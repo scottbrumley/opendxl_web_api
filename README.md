@@ -27,6 +27,7 @@ List of Challenges can be found [here](docs/challenges.md)
 * Set TIE file Reputation from HTTP
 * Get TIE file Reputation from HTTP
 * Set TIE file Reputation from FireEye Notification
+* Streaming Monitoring Service for DXL Messages
 
 ## Build Development Environment / Deploy To Production
 
