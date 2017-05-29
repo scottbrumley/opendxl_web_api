@@ -1,6 +1,6 @@
 # DXL Monitoring
 
-DXL monitoring monitors real-time communications on interesting topics.
+DXL monitoring monitors real-time communications on interesting topics using streaming.  Due to streaming no data will appear until something happens.  
 
 ## Configure Topics To Monitor
 Edit monitor.config
@@ -34,6 +34,13 @@ VendorTopic: /checkpoint/event/detection
 **VendorID:** Unique arbitrary vendor ID
 **VendorName:** Name To Appear on Graphing
 **VendorTopic:** Topic to monitor for messages
+
+#### Send Test Data to Populate Graphs
+**Run:** 
+```
+./tests/changerep.sh
+```  
+This will set a file reputation and change it forcing a TIE update broadcast to occur.
 
 ## Real-Time View
 ![Real-Time View](images/dxl-real-time.png)
