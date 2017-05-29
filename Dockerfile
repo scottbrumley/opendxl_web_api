@@ -22,7 +22,7 @@ RUN echo "Installing Python Common"
 RUN pip install common
 
 ## Clean UP
-#RUN apk del git gcc linux-headers musl-dev
+RUN apk del --no-cache git gcc linux-headers musl-dev
 
 RUN pip install Flask
 RUN pip install flask-socketio
