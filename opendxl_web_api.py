@@ -10,6 +10,7 @@ import random
 import json, time, datetime
 from threading import Thread, Event
 import threading
+import ConfigParser
 import eventlet
 eventlet.monkey_patch()
 
@@ -111,6 +112,7 @@ providerMap = {1:'GTI', 3:'Enterprise Reputation', 5:'ATD',7:"MWG"}
 ## Message String
 messStr = ""
 
+Config = ConfigParser.ConfigParser()
 ## Vendors Topic Dictionary
 vendorsDict = {}
 
@@ -124,6 +126,89 @@ app = Flask(__name__)
 socketio = SocketIO(app, async_mode="eventlet")
 thread = Thread()
 thread_stop_event = Event()
+
+def addVendorService(idStr, nameStr, topicStr ):
+    try:
+        vendorsDict[idStr] = {}
+        vendorsDict[idStr]['name'] = nameStr
+        vendorsDict[idStr]['topic'] = topicStr
+        vendorsDict[idStr]['count'] = 0
+        vendorsDict[idStr]['message'] = ""
+        return 1
+    except:
+        return 0
+
+def delVendorService(idStr):
+    try:
+        del vendorsDict[idStr]
+        return 1
+    except:
+        return 0
+
+def chgVendorService(idStr, nameStr, topicStr):
+    try:
+        if nameStr != vendorsDict[idStr]['name']:
+            vendorsDict[idStr]['name'] = nameStr
+        if nameStr != vendorsDict[idStr]['topic']:
+            vendorsDict[idStr]['topic'] = topicStr
+        return 1
+    except:
+        return 0
+
+def getVendorTopic(idStr):
+    try:
+        return vendorsDict[idStr]['topic']
+    except:
+        return ""
+
+def getVendorName(idStr):
+    try:
+        return vendorsDict[idStr]['name']
+    except:
+        return ""
+
+def getVendorList():
+    vendorLst = []
+    try:
+        for vendor in vendorsDict:
+            vendorLst.append(vendor)
+        return vendorLst
+    except:
+        return []
+
+def getVendorId(topicStr):
+    try:
+        for key, vendors in vendorsDict.iteritems():
+            if vendors["topic"] == topicStr:
+                return key
+    except:
+        return ""
+
+def readConfigSections():
+    Config.read("monitor.config")
+    return Config.sections()
+
+def ConfigSectionMap(section):
+    dict1 = {}
+    options = Config.options(section)
+    for option in options:
+        try:
+            dict1[option] = Config.get(section, option)
+            if dict1[option] == -1:
+                print("skip: %s" % option)
+        except:
+            print("exception on %s!" % option)
+            dict1[option] = None
+    return dict1
+
+vendorsSections = readConfigSections()
+
+for vendorSect in vendorsSections:
+    venId = ConfigSectionMap(vendorSect)['vendorid']
+    venName = ConfigSectionMap(vendorSect)['vendorname']
+    venTopic = ConfigSectionMap(vendorSect)['vendortopic']
+    print "Adding " + venName + " Topic: " + venTopic
+    addVendorService(venId,venName,venTopic)
 
 ##### About #####
 @app.route('/about')
@@ -306,63 +391,6 @@ def getFileRep():
         else:
             return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, propList=propList,action="getfile",json=json)
 
-def addVendorService(idStr, nameStr, topicStr ):
-    try:
-        vendorsDict[idStr] = {}
-        vendorsDict[idStr]['name'] = nameStr
-        vendorsDict[idStr]['topic'] = topicStr
-        vendorsDict[idStr]['count'] = 0
-        vendorsDict[idStr]['message'] = ""
-        return 1
-    except:
-        return 0
-
-def delVendorService(idStr):
-    try:
-        del vendorsDict[idStr]
-        return 1
-    except:
-        return 0
-
-def chgVendorService(idStr, nameStr, topicStr):
-    try:
-        if nameStr != vendorsDict[idStr]['name']:
-            vendorsDict[idStr]['name'] = nameStr
-        if nameStr != vendorsDict[idStr]['topic']:
-            vendorsDict[idStr]['topic'] = topicStr
-        return 1
-    except:
-        return 0
-
-def getVendorTopic(idStr):
-    try:
-        return vendorsDict[idStr]['topic']
-    except:
-        return ""
-
-def getVendorName(idStr):
-    try:
-        return vendorsDict[idStr]['name']
-    except:
-        return ""
-
-def getVendorList():
-    vendorLst = []
-    try:
-        for vendor in vendorsDict:
-            vendorLst.append(vendor)
-        return vendorLst
-    except:
-        return []
-
-def getVendorId(topicStr):
-    try:
-        for key, vendors in vendorsDict.iteritems():
-            if vendors["topic"] == topicStr:
-                return key
-    except:
-        return ""
-
 class ChgRepCallback(EventCallback):
     def on_event(self, event):
         # Extract
@@ -456,12 +484,12 @@ def test_connect():
     global thread
     print('Client connected')
 
-    addVendorService('mcafeetie','McAfee TIE','/mcafee/event/tie/file/repchange/broadcast')
-    addVendorService('mcafeeepo','McAfee ePO','/mcafee/event/epo/dxl/compinfo/response')
-    addVendorService('mcafeemar','McAfee MAR','/mcafee/mar/agent/query/all')
-    addVendorService('arubacp','Aruba ClearPass','/aruba/event/clearpass/log')
-    addVendorService('checkpointfw','Check Point Firewall','/checkpoint/event/detection')
-    addVendorService('scotto','Cool Queue','/scottbrumley/sample/basicevent')
+    #addVendorService('mcafeetie','McAfee TIE','/mcafee/event/tie/file/repchange/broadcast')
+    #addVendorService('mcafeeepo','McAfee ePO','/mcafee/event/epo/command/log')
+    #addVendorService('mcafeemar','McAfee MAR','/mcafee/mar/agent/query/all')
+    #addVendorService('arubacp','Aruba ClearPass','/aruba/event/clearpass/log')
+    #addVendorService('checkpointfw','Check Point Firewall','/checkpoint/event/detection')
+    #addVendorService('scotto','Cool Queue','/scottbrumley/sample/basicevent')
 
     vendorIdStr = "Test"
     topicStr = "Topic"
