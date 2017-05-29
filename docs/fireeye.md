@@ -14,7 +14,7 @@
 10. Uncheck Auth
 11. Check SSL Enabled
 
-### URL: http://opendxlapi:5000/setfile?token=<your token>
+### URL: http://opendxlapi:5000/tie/fireeye/setfile/<your token>
 
 
 ![fireeye configuration](images/fireeye-splunk.jpg)   
