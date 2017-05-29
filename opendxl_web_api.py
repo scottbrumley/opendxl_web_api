@@ -12,8 +12,8 @@ from threading import Thread, Event
 import threading
 import ConfigParser
 import eventlet
+eventlet.sleep()
 eventlet.monkey_patch()
-
 
 from dxlclient.callbacks import EventCallback, RequestCallback
 from dxlclient.client import DxlClient
