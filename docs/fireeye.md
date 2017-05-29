@@ -14,6 +14,8 @@
 10. Uncheck Auth
 11. Check SSL Enabled
 
+**Choose JSON Concise**
+
 ### URL: http://opendxlapi:5000/tie/fireeye/setfile/<your token>
 
 
