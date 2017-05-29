@@ -21,12 +21,13 @@ RUN apk del git
 RUN echo "Installing Python Common"
 RUN pip install common
 
-## Clean UP
-RUN apk del --no-cache git gcc linux-headers musl-dev
-
 RUN pip install Flask
 RUN pip install flask-socketio
 RUN pip install eventlet
+
+## Clean UP
+RUN apk del --no-cache git gcc linux-headers musl-dev
+
 ## Setup Flask Environment
 ENV FLASK_APP=/opendxl_web_api.py
 
