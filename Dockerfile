@@ -6,6 +6,7 @@ ADD scripts/common.sh scripts/common.sh
 ADD scripts/bootstrap.sh scripts/bootstrap.sh
 ADD scripts/service.sh scripts/service.sh
 ADD scripts/vars.sh scripts/vars.sh
+ADD monitor.config monitor.config
 ADD templates/ templates/
 ADD tests/ tests/
 
