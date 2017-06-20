@@ -30,7 +30,20 @@ Pre-requisites can be found [here](docs/Prerequisites.md)
 * Set TIE file Reputation from FireEye Notification
 * Streaming Monitoring Service for DXL Messages
 
-## Build Development Environment / Deploy To Production
+## Development, Build, Deploy 
+
+### Build Your Development Environment
+If you are interested in coding then this will build your Development Environment in a virtual machine using Vagrant.
+[Build Development](docs/dev.md)
+
+### Deploy Using Docker To Production
+For a portable environment free of dependencies Docker is a good choice.
+[Deploy Docker](docs/dockerdeploy.md)
+
+### Deploy Using Docker Swarm To Production
+For a self-healing fault-tolerant environment Docker Swarm is a simple choice.
+[Deploy Docker Swarm](docs/dockerswarm.md)
+
 
 How to perform the automated build for this project.  As well as how to deploy the code into a remote production system or test system.
 
