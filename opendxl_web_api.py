@@ -391,19 +391,17 @@ def getFileRep():
         else:
             return render_template('reputation.html', md5=md5, sha1=sha1, sha256=sha256, propList=propList,action="getfile",json=json)
 
-class ChgRepCallback(EventCallback):
-    def on_event(self, event):
-        # Extract
-        resultStr = json.loads(event.payload.decode())
-        print "Topic: " + event.destination_topic
-        #print resultStr
-        vendorId = getVendorId(event.destination_topic)
+def initCharts():
+    vendorList = getVendorList()
+
+    for vendorId in vendorList:
+        vendorTopic = getVendorTopic(vendorId)
 
         now = datetime.datetime.now()
-        later = now + datetime.timedelta(minutes = 5)
+        later = now + datetime.timedelta(seconds = 1)
         eventTime = now.strftime("%Y-%m-%d %H:%M:%S")
-        startTime = now.strftime("%Y,%m,%d,%H,%M,%S")
-        endTime = later.strftime("%Y,%m,%d,%H,%M,%S")
+        startTime =  now.strftime("%Y,%m,%d,%H,%M,%S")
+        endTime =  later.strftime("%Y,%m,%d,%H,%M,%S")
 
         #             messStr = "{'data':'Hi There'}"
         #if len(vendorsDict[vendorId]['message']) > 0:
@@ -411,19 +409,57 @@ class ChgRepCallback(EventCallback):
         #else:
 
         lastMessage = vendorsDict[vendorId]['message']
-        vendorsDict[vendorId]['message'] = '{"c":[{"v": "' + getVendorName(vendorId) + '"}, {"v": null}, {"v": "<h2>' + event.destination_topic + '</h2><br>' + eventTime + '<br>' + str(resultStr) + '"}, {"v": "Date(' + startTime + ')", "f":null}, {"v": "Date(' + endTime + ')", "f":null}]}'
+        vendorsDict[vendorId]['message'] = '{"c":[{"v": "' + getVendorName(vendorId) + '"}, {"v": null}, {"v": "<h2>' + vendorTopic + '</h2><br>' + eventTime + '<br>Start"}, {"v": "Date(' + startTime + ')", "f":null}, {"v": "Date(' + endTime + ')", "f":null}]}'
 
         #print "Mess String: " + vendorsDict[vendorId]['message']
         ## Send JSON
         #             socketio.emit("my_response", {'data':'Hi There'} , namespace='/test')
-        if (isDup(event.destination_topic, lastMessage)):
+        if (isDup(vendorTopic, lastMessage)):
             print "Dup Message Found.  Not Sending."
         else:
             # Add 1 to message Count
-            vendorsDict[vendorId]['count'] += 1
+            vendorsDict[vendorId]['count'] = 0
             vendorCount = [vendorsDict[vendorId]['name'],     vendorsDict[vendorId]['count']]
             socketio.emit("timeline", {'data': vendorsDict[vendorId]['message']}, namespace='/test')
             socketio.emit("count", {'data': vendorCount}, namespace='/test')
+
+def drawTimeLine(resultStr, topicStr):
+    # Extract
+    print "Topic: " + topicStr
+    vendorId = getVendorId(topicStr)
+
+    now = datetime.datetime.now()
+    later = now + datetime.timedelta(minutes = 5)
+    eventTime = now.strftime("%Y-%m-%d %H:%M:%S")
+    startTime = now.strftime("%Y,%m,%d,%H,%M,%S")
+    endTime = later.strftime("%Y,%m,%d,%H,%M,%S")
+
+    #             messStr = "{'data':'Hi There'}"
+    #if len(vendorsDict[vendorId]['message']) > 0:
+    #    vendorsDict[vendorId]['message'] = vendorsDict[vendorId]['message'] + ', ' + '{"c":[{"v": "' + getVendorName(vendorId) + '"}, {"v": null}, {"v": "<h2>' + event.destination_topic + '</h2><br>' + eventTime + '<br>' + str(resultStr) + '"}, {"v": "Date(' + startTime + ')", "f":null}, {"v": "Date(' + endTime + ')", "f":null}]}'
+    #else:
+
+    lastMessage = vendorsDict[vendorId]['message']
+    vendorsDict[vendorId]['message'] = '{"c":[{"v": "' + getVendorName(vendorId) + '"}, {"v": null}, {"v": "<h2>' + topicStr + '</h2><br>' + eventTime + '<br>' + str(resultStr) + '"}, {"v": "Date(' + startTime + ')", "f":null}, {"v": "Date(' + endTime + ')", "f":null}]}'
+
+    #print "Mess String: " + vendorsDict[vendorId]['message']
+    ## Send JSON
+    #             socketio.emit("my_response", {'data':'Hi There'} , namespace='/test')
+    if (isDup(topicStr, lastMessage)):
+        print "Dup Message Found.  Not Sending."
+    else:
+        # Add 1 to message Count
+        vendorsDict[vendorId]['count'] += 1
+        vendorCount = [vendorsDict[vendorId]['name'],     vendorsDict[vendorId]['count']]
+        socketio.emit("timeline", {'data': vendorsDict[vendorId]['message']}, namespace='/test')
+        socketio.emit("count", {'data': vendorCount}, namespace='/test')
+
+class ChgRepCallback(EventCallback):
+    def on_event(self, event):
+        resultStr = json.loads(event.payload.decode())
+        topicStr = event.destination_topic
+
+        drawTimeLine(resultStr,topicStr)
 
 def isDup(topicStr, message):
     vendorId = getVendorId(topicStr)
@@ -484,13 +520,6 @@ def test_connect():
     global thread
     print('Client connected')
 
-    #addVendorService('mcafeetie','McAfee TIE','/mcafee/event/tie/file/repchange/broadcast')
-    #addVendorService('mcafeeepo','McAfee ePO','/mcafee/event/epo/command/log')
-    #addVendorService('mcafeemar','McAfee MAR','/mcafee/mar/agent/query/all')
-    #addVendorService('arubacp','Aruba ClearPass','/aruba/event/clearpass/log')
-    #addVendorService('checkpointfw','Check Point Firewall','/checkpoint/event/detection')
-    #addVendorService('scotto','Cool Queue','/scottbrumley/sample/basicevent')
-
     vendorIdStr = "Test"
     topicStr = "Topic"
     resultStr = ""
@@ -500,8 +529,10 @@ def test_connect():
     startTime = now.strftime("%Y,%m,%d,%H,%M,%S")
     endTime = later.strftime("%Y,%m,%d,%H,%M,%S")
 
-    startMess = '{"c":[{"v": "' + vendorIdStr + '"}, {"v": null}, {"v": "<h2>' + topicStr + '</h2><br>' + eventTime + '<br>' + str(resultStr) + '"}, {"v": "Date(' + startTime + ')", "f":null}, {"v": "Date(' + endTime + ')", "f":null}]}'
+    #startMess = '{"c":[{"v": "' + vendorIdStr + '"}, {"v": null}, {"v": "<h2>' + topicStr + '</h2><br>' + eventTime + '<br>' + str(resultStr) + '"}, {"v": "Date(' + startTime + ')", "f":null}, {"v": "Date(' + endTime + ')", "f":null}]}'
     #socketio.emit("my_response", {'data': startMess} , namespace='/test')
+
+    initCharts()
 
     if not thread.isAlive():
         print "Starting Thread"

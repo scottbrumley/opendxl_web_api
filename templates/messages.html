@@ -16,16 +16,17 @@
 
     function drawDougnut() {
         var countList = [];
-        countList = pageData.count;
-        //var countList = [['Message', 'Message Cumulative']];
-        //countList.push(['McAfee TIE',     11]);
-        //countList.push(['FireEye',      2]);
-        //countList.push(['Aruba Clear Pass',  2]);
 
-        var data = google.visualization.arrayToDataTable(countList);
+        if (pageData.count == "undefined") {
+            var data = google.visualization.arrayToDataTable("['', 0]");
+        } else {
+            countList = pageData.count;
+            var data = google.visualization.arrayToDataTable(countList);
+        }
 
         var options = {
             title: 'Messages By Vendor Service',
+            pieHole: 0.4,
             is3D: true,
         };
 
@@ -56,6 +57,7 @@
 
         var dataTable = new google.visualization.DataTable(tableStr);
         var options = {
+            height: 1200,
             colors: ['#cbb69d', '#603913', '#c69c6e'],
             timeline: { rowLabelStyle: {fontName: 'Helvetica', fontSize: 24, color: '#603913' },
                 barLabelStyle: { fontName: 'Garamond', fontSize: 14 } }
@@ -75,7 +77,7 @@
 
         socket.on('timeline', function(msg) {
             //$('#log').append('<p>Received 11: ' + msg + '</p>');
-            //console.log("Document Ready: " + msg.data);
+            console.log("Document Ready: " + msg.data);
 
             if (typeof(pageData.timeline) == "undefined") {
                 pageData.timeline = msg.data;
@@ -83,7 +85,7 @@
                 pageData.timeline = pageData.timeline + ", " + msg.data;
             }
             pageData.head = "Response";
-            //google.charts.setOnLoadCallback(drawTimeLine(msg.data));
+            google.charts.setOnLoadCallback(drawTimeLine);
             drawTimeLine(msg.data);
         });
 
@@ -98,11 +100,13 @@
                 // Read message into variable to work with
                 msgChg = msg.data;
 
-                for (var i = 0; i <pageData.count.length; i++) {
-                    if(pageData.count[i][0] == msgChg[0]){
-                        pageData.count[i][1] = msgChg[1];
-                        foundStr = true;
-                        break;
+                if (pageData.count != null) {
+                   for (var i = 0; i < pageData.count.length; i++) {
+                        if (pageData.count[i][0] == msgChg[0]) {
+                            pageData.count[i][1] = msgChg[1];
+                            foundStr = true;
+                            break;
+                        }
                     }
                 }
 
@@ -138,6 +142,6 @@
 <div id="piechart_3d" style="width: 450px; height: 250px;"></div>
 <h2>DXL Real-Time</h2>
 <script>setOnLoadCallback()</script>
-<div id="dxltimeline" style="height: 200px;"></div>
+<div id="dxltimeline" style="height: 1200px;"></div>
 </body>
 </html>
