@@ -45,10 +45,6 @@ For a self-healing fault-tolerant environment Docker Swarm is a simple choice.
 [Deploy Docker Swarm](docs/dockerswarm.md)
 
 
-How to perform the automated build for this project.  As well as how to deploy the code into a remote production system or test system.
-
-[Build / Run Documentation](docs/build.md)
-
 ## SSL Encryption
 The best way to enable SSL encryption is through an external load balancers (nginx, haproxy, Netscalers, or F5).  The load balancer can terminate the SSL encryption from the client.  This allows the backend to remain free and composable.
 
