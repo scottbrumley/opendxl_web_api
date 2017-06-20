@@ -71,7 +71,7 @@ Taxonomy of the API is documented in the taxonomy documentation.  This highlight
 
 ## More Documentation
 For more on the technologies used in this project see.
-[Miscellaneous](misc.md)
+[Miscellaneous](docs/misc.md)
 
 ### LICENSE
 Copyright 2017 McAfee, Inc.
