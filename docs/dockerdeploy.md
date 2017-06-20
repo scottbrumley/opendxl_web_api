@@ -26,6 +26,3 @@ ADD dxlclient.config dxlclient.config
 ADD monitor.config monitor.config
 ENV FLASK_TOKEN="27612211994137900087"
 ```
-
-## More Documentation
-[Miscellaneous](misc.md)
