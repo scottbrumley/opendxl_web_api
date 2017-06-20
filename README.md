@@ -69,6 +69,10 @@ Taxonomy of the API is documented in the taxonomy documentation.  This highlight
 [FireEye Notification Configuration](docs/fireeye.md)
 
 
+## More Documentation
+For more on the technologies used in this project see.
+[Miscellaneous](misc.md)
+
 ### LICENSE
 Copyright 2017 McAfee, Inc.
 
