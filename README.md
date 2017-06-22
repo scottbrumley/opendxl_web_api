@@ -30,6 +30,9 @@ Pre-requisites can be found [here](docs/Prerequisites.md)
 * Set TIE file Reputation from FireEye Notification
 * Streaming Monitoring Service for DXL Messages
 
+## Quick Start Using Docker
+[Quick Start](docs/quickstart.md)
+
 ## Development, Build, Deploy 
 
 ### Build Your Development Environment
