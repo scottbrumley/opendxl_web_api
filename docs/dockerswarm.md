@@ -7,7 +7,7 @@
 ```
 1. Add Files/Directories for configuration: brokercerts/ , certs/ , dxlclient.config , monitor.config
 2. sudo docker build -t mcafee/opendxl-webapi:0.1.1 -f Dockerfile.run . 
-3. sudo docker service create --name opendxl-webapi --replicas 3 --publish 5000:5000
+3. sudo docker service create --name opendxl-webapi --replicas 3 --publish 5000:5000 mcafee/opendxl-webapi:0.1.1
 ```
 1. Copy Configuration Files and Certs to local build directory (For more information check Prerequisites)
 2. This will configure your container with your certs and site information.
