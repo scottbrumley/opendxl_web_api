@@ -48,9 +48,9 @@ The following steps walk through running the OpenDXL Slack/TIE integration in st
     pip install -r requirements.txt
         
     If the above command fails on any of the following, you can navigate to the associated link, download the release, and install the library manually:
-        * dxltieclient - https://github.com/opendxl/opendxl-tie-client-python
-        * dxlmarclient - https://github.com/opendxl/opendxl-mar-client-python
-        * dxlepoclient - https://github.com/opendxl/opendxl-epo-client-python
+    - dxltieclient - https://github.com/opendxl/opendxl-tie-client-python
+    - dxlmarclient - https://github.com/opendxl/opendxl-mar-client-python
+    - dxlepoclient - https://github.com/opendxl/opendxl-epo-client-python
 
 * Run the opendxl_web_api.py file using python:
     python opendxl_web_api.py
