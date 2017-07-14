@@ -34,9 +34,6 @@ Pre-requisites can be found [here](docs/Prerequisites.md)
 
 ## Usage (Standalone)
 
-List of Challenges can be found [here](docs/challenges.md)<br>
-Pre-requisites can be found [here](docs/Prerequisites.md)
-
 The following steps walk through running the OpenDXL Slack/TIE integration in standalone mode:
 
 * Download the latest release of the OpenDXL WebAPI release
@@ -45,12 +42,10 @@ The following steps walk through running the OpenDXL Slack/TIE integration in st
     The steps are identical to those described in the OpenDXL Client [Samples Configuration](https://opendxl.github.io/opendxl-client-python/pydoc/sampleconfig.html) documentation.
 * Place the dxlclient.config and related certificate files into the same directory as the opendxl_web_api.py file (in the extracted release)
 * Install the required Python dependencies using the requirements.txt in the release:
+    
+    ```
     pip install -r requirements.txt
-        
-    If the above command fails on any of the following, you can navigate to the associated link, download the release, and install the library manually:
-    - dxltieclient - https://github.com/opendxl/opendxl-tie-client-python
-    - dxlmarclient - https://github.com/opendxl/opendxl-mar-client-python
-    - dxlepoclient - https://github.com/opendxl/opendxl-epo-client-python
+    ```
 
 * Run the opendxl_web_api.py file using python:
     python opendxl_web_api.py
@@ -60,7 +55,7 @@ The following steps walk through running the OpenDXL Slack/TIE integration in st
 * To verify the server is operational, you may try accessing the "About" page on the localhost.
     http://127.0.0.1:5000/about?token=27612211994137900087
 
-* If you have the OpenDXL Tie Client library installed ("dxltieclient"), you can try checking file reputation by SHA1 Hash
+* Try checking a file's TIE reputation by SHA1 Hash
     http://127.0.0.1:5000/tie/getfile/?sha1=D4186881780D48BF55D4D59171B115634E3C7BA6&token=27612211994137900087
     
     ![Sample Tie Reputation](docs/images/sample-tie-rep.png)  
