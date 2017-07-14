@@ -54,13 +54,16 @@ The following steps walk through running the OpenDXL Slack/TIE integration in st
 
 * Run the opendxl_web_api.py file using python:
     python opendxl_web_api.py
-* When you see the following confirmation, the server is now ready to receive HTTP requests: (docs/images/standalone-start.png)  
+* When you see the following confirmation, the server is now ready to receive HTTP requests: 
+![Output Example](docs/images/standalone-run.png)  
 
 * To verify the server is operational, you may try accessing the "About" page on the localhost.
     http://127.0.0.1:5000/about?token=27612211994137900087
 
 * If you have the OpenDXL Tie Client library installed ("dxltieclient"), you can try checking file reputation by SHA1 Hash
     http://127.0.0.1:5000/tie/getfile/?sha1=D4186881780D48BF55D4D59171B115634E3C7BA6&token=27612211994137900087
+    
+    ![Sample Tie Reputation](docs/images/sample-tie-rep.png)  
 
 * For more information about available commands, see the [API Taxonomy](docs/taxonomy.md)
 
