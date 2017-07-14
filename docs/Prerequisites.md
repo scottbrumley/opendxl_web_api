@@ -1,13 +1,34 @@
 # Prerequisites
 
 ## Configuration Information
-* Put your broker certs in the brokercerts/ directory [Certificate Setup](./cert_setup.md)
-* Put your client certificates in the certs/ directory [Certificate Setup](./cert_setup.md)
-* Edit dxlclient.config and add your Broker(s)
-* Change DXL Topic Authorization: TIE Server Set Enterprise Reputation (send) to All Systems in ePO
-* Change DXL Topic Authorization: Active Response Server API (receive) to All Systems in ePO
+* Change DXL Topic Authorization: TIE Server Set Enterprise Reputation (send) to include the system that will be running this client
+* Change DXL Topic Authorization: Active Response Server API (receive) to include the system that will be running this client
 
-## Automated Environment
+## McAfee OpenDXL SDK
+
+https://www.mcafee.com/us/developers/open-dxl/index.aspx
+
+McAfee Threat Intelligence Exchange (TIE) DXL Python Client Library at the follow link:
+
+https://github.com/opendxl/opendxl-tie-client-python/wiki
+
+* Certificate Files Creation [link](https://opendxl.github.io/opendxl-client-python/pydoc/certcreation.html)
+* ePO Certificate Authority (CA) Import [link](https://opendxl.github.io/opendxl-client-python/pydoc/epocaimport.html)
+* ePO Broker Certificates Export  [link](https://opendxl.github.io/opendxl-client-python/pydoc/epobrokercertsexport.html)
+
+### Edit the dxlclient.config
+```
+[Certs]
+BrokerCertChain=/brokercerts/brokercerts.crt
+CertFile=/certs/client.crt
+PrivateKey=/certs/client.key
+
+[Brokers]
+unique_broker_id_1=broker_id_1;broker_port_1;broker_hostname_1;broker_ip_1
+unique_broker_id_2=broker_id_2;broker_port_2;broker_hostname_2;broker_ip_2
+```
+
+## (Optional) Automated Environment
 1. Download Vagrant https://www.vagrantup.com/downloads.html
 2. Run installer for Vagrant
 3. Download Virtualbox https://www.virtualbox.org/wiki/Downloads?replytocom=98578
