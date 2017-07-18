@@ -26,7 +26,7 @@
 http://127.0.0.1:5000/about?token=27612211994137900087
 
 ## Checking File Reputation by SHA1 Hash
-http://127.0.0.1:5000/tie/getfile/?sha1=D4186881780D48BF55D4D59171B115634E3C7BA6?token=27612211994137900087
+http://127.0.0.1:5000/tie/getfile/?sha1=D4186881780D48BF55D4D59171B115634E3C7BA6&token=27612211994137900087
 
 ## Stopping Container
 ./scripts/stop.sh
