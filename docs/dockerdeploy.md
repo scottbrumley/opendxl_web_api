@@ -21,7 +21,7 @@
 2. This will configure your container with your certs and site information.
 3. Run Local Docker Container 
 
-#### Example Dockerfile for Run
+#### Example Dockerfile.run 
 ```
 FROM sbrumley/opendxl-webapi:0.1.1
 ADD ./brokercerts/ brokercerts/
