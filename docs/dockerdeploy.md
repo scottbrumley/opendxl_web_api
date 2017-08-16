@@ -24,8 +24,8 @@
 #### Example Dockerfile for Run
 ```
 FROM sbrumley/opendxl-webapi:0.1.1
-ADD brokercerts/ brokercerts/
-ADD certs/ certs/
+ADD ./brokercerts/ brokercerts/
+ADD ./certs/ certs/
 ADD dxlclient.config dxlclient.config
 ADD monitor.config monitor.config
 ENV FLASK_TOKEN="27612211994137900087"
