@@ -20,14 +20,15 @@ function cleanUp {
     ${SUDO}apt-get -y clean
 }
 
-function installOpenDXLClient {
-    ### Install Open DXL Client
-    echo "Installing Open DXL Client"
-    cd /${ROOT_DIR}
-    ${SUDO}git clone https://github.com/opendxl/opendxl-client-python.git
-    cd /${ROOT_DIR}/opendxl-client-python
-    ${SUDO}python setup.py install
+function installOpenDXLCLient(){
+   ### Install Open DXL Client
+   echo "Installing Open DXL Client"
+   cd ${ROOT_DIR}
+   ${SUDO}git clone https://github.com/opendxl/opendxl-bootstrap-python.git
+   cd ${ROOT_DIR}opendxl-bootstrap-python
+   ${SUDO}python setup.py install
 }
+
 
 function installOpenDXLTIEClient {
     if [[ -d "${ROOT_DIR}/opendxl-tie-client-python" ]]; then
