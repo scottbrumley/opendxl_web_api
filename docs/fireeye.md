@@ -13,6 +13,7 @@
 9. Check Enabled
 10. Uncheck Auth
 11. Check SSL Enabled
+12. Per Event
 
 **Choose JSON Concise**
 
