@@ -692,6 +692,7 @@ with DxlClient(config) as dxlClient:
         severityStr = "unkn"
 
         if not authenticate(myToken):
+            print "access denied"
             return jsonify(
                 access = "access denied"
             )
@@ -710,6 +711,7 @@ with DxlClient(config) as dxlClient:
                     md5 = content['alert']['explanation']['malware-detected']['malware']['md5sum']
                     print "md5 hash = " + md5
                 else:
+                    print "md5sum field not present in JSON"
                     return jsonify(
                         error="md5sum field not present in JSON"
                     )
@@ -720,11 +722,13 @@ with DxlClient(config) as dxlClient:
                     filenameStr = content['alert']['explanation']['malware-detected']['malware']['name'] + "." + content['alert']['explanation']['malware-detected']['malware']['type']
                     print "Filename = " + filenameStr
             else:
+                print "malware field not present in JSON"
                 return jsonify(
                     error="malware field not present in JSON"
                 )
 
         else:
+            print "malware-detected field not present in JSON"
             return jsonify(
                 error="malware-detected field not present in JSON"
             )
@@ -732,6 +736,7 @@ with DxlClient(config) as dxlClient:
         ## Check to make sure this is a valid md5 hash
         if md5 != "":
             if not is_md5(md5):
+                print "invalid md5"
                 return jsonify(
                     error= "invalid md5"
                 )
