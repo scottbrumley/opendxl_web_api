@@ -16,7 +16,7 @@
 
 **Choose JSON Concise**
 
-### URL: http://opendxlapi:5000/tie/fireeye/setfile/your token
+### URL: http://opendxlapi:5000/tie/fireeye/setfile/your_token
 
 
 ![fireeye configuration](images/fireeye-splunk.jpg)   
