@@ -13,10 +13,11 @@
 9. Check Enabled
 10. Uncheck Auth
 11. Check SSL Enabled
+12. Per Event
 
 **Choose JSON Concise**
 
-### URL: http://opendxlapi:5000/tie/fireeye/setfile/<your token>
+### URL: http://opendxlapi:5000/tie/fireeye/setfile/your_token
 
 
 ![fireeye configuration](images/fireeye-splunk.jpg)   
