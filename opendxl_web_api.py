@@ -3,13 +3,9 @@
 # by their hashes)
 
 import base64
-#import logging
-import os
-import sys
-import random
 import json, time, datetime
 from threading import Thread, Event
-import threading
+#import threading
 import ConfigParser
 import eventlet
 eventlet.sleep()
@@ -18,35 +14,21 @@ eventlet.monkey_patch()
 from dxlclient.callbacks import EventCallback, RequestCallback
 from dxlclient.client import DxlClient
 from dxlclient.client_config import DxlClientConfig
-from dxlclient.message import Message, Request
+#from dxlclient.message import Message, Request
 from dxlclient.service import ServiceRegistrationInfo
 
 from dxltieclient import TieClient
-from dxltieclient.constants import HashType, TrustLevel, FileProvider, ReputationProp, CertProvider, CertReputationProp, CertReputationOverriddenProp
+from dxltieclient.constants import HashType, TrustLevel, FileProvider #, ReputationProp, CertProvider, CertReputationProp, CertReputationOverriddenProp
 
 from flask import Flask
 from flask import render_template
 from flask import jsonify
-from flask import stream_with_context, request, Response
-from flask_socketio import SocketIO, emit
+from flask import request
+from flask_socketio import SocketIO
 
 # Import common logging and configuration
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/..")
 from common import *
 
-# Enable logging, this will also direct built-in DXL log messages.
-# See - https://docs.python.org/2/howto/logging-cookbook.html
-#log_formatter = logging.Formatter('%(asctime)s %(name)s - %(levelname)s - %(message)s')
-
-#console_handler = logging.StreamHandler()
-#console_handler.setFormatter(log_formatter)
-
-#logger = logging.getLogger()
-#logger.addHandler(console_handler)
-#logger.setLevel(logging.INFO)
-
-## DXL Client Configuration
-CONFIG_FILE_NAME = "./dxlclient.config"
 
 # The topic for requesting file reputations
 FILE_GET_REP_TOPIC = "/mcafee/service/tie/file/reputation"
@@ -54,9 +36,8 @@ FILE_SET_REP_TOPIC = "/mcafee/service/tie/file/reputation/set"
 
 # Create DXL configuration from file
 config = DxlClientConfig.create_dxl_config_from_file(CONFIG_FILE_NAME)
-CONFIG_FILE = os.path.dirname(os.path.abspath(__file__)) + "/" + CONFIG_FILE_NAME
 
-with DxlClient(config) as client:
+with DxlClient(config) as dxlClient:
 
     ## Test value is hex
     def is_hex(s):
@@ -73,38 +54,6 @@ with DxlClient(config) as client:
         :return: The base64 value for the specified hes string
         """
         return base64.b64encode(hexstr.decode('hex'))
-
-    def get_tie_file_reputation(client, md5_hex, sha1_hex):
-        """
-        Returns a dictionary containing the results of a TIE file reputation request
-
-        :param client: The DXL client
-        :param md5_hex: The MD5 Hex string for the file
-        :param sha1_hex: The SHA-1 Hex string for the file
-        :return: A dictionary containing the results of a TIE file reputation request
-        """
-        # Create the request message
-        req = Request(FILE_GET_REP_TOPIC)
-
-        # Create a dictionary for the payload
-        payload_dict = {
-            "hashes": [
-                {"type": "md5", "value": base64_from_hex(md5_hex)},
-                {"type": "sha1", "value": base64_from_hex(sha1_hex)}
-            ]
-        }
-
-        # Set the payload
-        req.payload = json.dumps(payload_dict).encode()
-
-        # Send the request and wait for a response (synchronous)
-        res = client.sync_request(req)
-
-        # Return a dictionary corresponding to the response payload
-        if res.message_type != Message.MESSAGE_TYPE_ERROR:
-            return json.loads(res.payload.decode(encoding="UTF-8"))
-        else:
-            raise Exception("Error: " + res.error_message + " (" + str(res.error_code) + ")")
 
     ## TIE Reputation Average Map
     tiescoreMap = {0:'Not Set', 1:'Known Malicious', 15: 'Most Likely Malicious', 30: 'Might Be Malicious',50: 'Unknown',70:"Might Be Trusted",85: "Most Likely Trusted", 99: "Known Trusted",100: "Known Trusted Installer"}
@@ -215,6 +164,7 @@ with DxlClient(config) as client:
     ##### About #####
     @app.route('/about')
     def about():
+        myToken = ""
         if request.args.get('token'):
             myToken = request.args.get('token')
 
@@ -228,6 +178,7 @@ with DxlClient(config) as client:
     ##### TIE #####
     @app.route('/tie')
     def tie():
+        myToken = ""
         if request.args.get('token'):
             myToken = request.args.get('token')
 
@@ -240,25 +191,46 @@ with DxlClient(config) as client:
 
     ## Get the file reputation properties from TIE using md5 or sha1
     def getTieRep(md5,sha1,sha256):
-        # Create the McAfee Threat Intelligence Exchange (TIE) client
-        tie_client = TieClient(client)
+        # File Hashes
+        myGetHashes = {}
+        #myGetHashes = {"HashType.MD5": "", "HashType.SHA1": "", "HashType.SHA256": ""}
+
+        # Create the McAfee Threat Intelligence Exchange (TIE) dxlClient
+        tie_client = TieClient(dxlClient)
 
         #
         # Request and display reputation for notepad.exe
         #
-        if md5:
-            reputations_dict = tie_client.get_file_reputation({HashType.MD5: md5})
-        if sha1:
-            reputations_dict = tie_client.get_file_reputation({HashType.SHA1: sha1})
-        if sha256:
-            reputations_dict = tie_client.get_file_reputation({HashType.SHA256: sha256})
 
+        if md5 == None and sha1 == None and sha256 == None:
+            return myGetHashes
+        else:
+            ### Verify SHA1 string
+            if is_sha1(sha1):
+                myGetHashes[HashType.SHA1] = sha1
+
+            ### Verify SHA256 string
+            if is_sha256(sha256):
+                myGetHashes[HashType.SHA256] = sha256
+
+            if is_md5(md5):
+                myGetHashes[HashType.MD5] = md5
+
+        print "myGetHashes:"
+        print myGetHashes
+        reputations_dict = tie_client.get_file_reputation(myGetHashes)
         #myReturnVal = json.dumps(reputations_dict, sort_keys=True, indent=4, separators=(',', ': ')) + "\n"
 
         return reputations_dict
 
     ## Check if it is a SHA1
     def is_sha1(maybe_sha):
+        if maybe_sha == None:
+            return False
+
+        if maybe_sha == "":
+            return False
+
         if len(maybe_sha) != 40:
             return False
         try:
@@ -269,6 +241,13 @@ with DxlClient(config) as client:
 
     ## Check if it is a SHA256
     def is_sha256(maybe_sha):
+
+        if maybe_sha == None:
+            return False
+
+        if maybe_sha == "":
+            return False
+
         if len(maybe_sha) != 64:
             return False
         try:
@@ -279,6 +258,12 @@ with DxlClient(config) as client:
 
     ## Check if it is an MD5
     def is_md5(maybe_md5):
+        if maybe_md5 == None:
+            return False
+
+        if maybe_md5 == "":
+            return False
+
         if len(maybe_md5) != 32:
             return False
         try:
@@ -380,6 +365,7 @@ with DxlClient(config) as client:
                     )
 
             myReturnProps = getTieRep(md5,sha1,sha256)
+
             ### Load JSON into fileProps Dictionary
             propList = getFileProps(myReturnProps)
 
@@ -487,14 +473,15 @@ with DxlClient(config) as client:
                     print "Service recieved request payload: " + request.payload.decode()
 
             ## Register with ePO and add the request topic
-            info = ServiceRegistrationInfo(client, SERVICE_TYPE)
-            client.register_service_sync(info, 10)
+            info = ServiceRegistrationInfo(dxlClient, SERVICE_TYPE)
+            dxlClient.register_service_sync(info, 10)
+
             info.add_topic(REQUEST_TOPIC, MyRequestCallback())
 
             ## Get list of vendorIDs and subscribe to each topic
             vendorList = getVendorList()
             for vendor in vendorList:
-                client.add_event_callback(vendorsDict[vendor]['topic'], ChgRepCallback())
+                dxlClient.add_event_callback(vendorsDict[vendor]['topic'], ChgRepCallback())
 
             ## Listent to Events
             print "Listening for Events"
@@ -578,7 +565,23 @@ with DxlClient(config) as client:
 
     ## Set the TIE reputation of a file via MD5, SHA1, or SHA256 hash
     def setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr):
+        # File Hashes
+        mySetHashes = {HashType.MD5: "", HashType.SHA1: "", HashType.SHA256: ""}
+
         trustlevelInt = getTrustLevel(trustlevelStr)
+
+        print " ---  debug --- "
+        print "Filename:"
+        print filenameStr
+        print "CommentStr:"
+        print commentStr
+        print "MD5:"
+        print md5
+        print "SHA1:"
+        print sha1
+        print "SHA256:"
+        print sha256
+        print " ---  end debug --- "
 
         if md5 == None and sha1 == None and sha256 == None:
             return jsonify(
@@ -586,36 +589,43 @@ with DxlClient(config) as client:
             )
         else:
             ### Verify SHA1 string
-            if sha1 != "":
-                if not is_sha1(sha1):
+            if sha1 != "" or sha1 != None:
+                if is_sha1(sha1):
+                    mySetHashes[HashType.SHA1] = sha1
+                else:
                     return jsonify(
                         error= "invalid sha1"
                     )
 
             ### Verify SHA256 string
-            if sha256 != "":
-                if not is_sha256(sha256):
+            if sha256 != "" or sha256 != None:
+                if is_sha256(sha256):
+                    mySetHashes[HashType.SHA256] = sha256
+                else:
                     return jsonify(
                         error= "invalid sha256"
                     )
 
-            if md5 != "":
-                if not is_md5(md5):
+            if md5 != "" or md5 != None:
+                if is_md5(md5):
+                    mySetHashes[HashType.MD5] = md5
+                else:
                     return jsonify(
                         error= "invalid md5"
                     )
 
+
+        print "mySetHashes:"
+        print mySetHashes
+
         # Create the McAfee Threat Intelligence Exchange (TIE) client
-        tie_client = TieClient(client)
+        tie_client = TieClient(dxlClient)
 
         if trustlevelInt != -1:
-            # Set the Enterprise reputation for notepad.exe to Known Trusted
+
             tie_client.set_file_reputation(
-                trustlevelInt , {
-                    HashType.MD5: md5,
-                    HashType.SHA1: sha1,
-                    HashType.SHA256: sha256
-                },
+                trustlevelInt ,
+                mySetHashes,
                 filename=filenameStr,
                 comment=commentStr)
         else:
@@ -735,6 +745,7 @@ with DxlClient(config) as client:
     ### Default API
     @app.route('/')
     def root_path():
+        myToken = ""
         if request.args.get('token'):
             myToken = request.args.get('token')
 
@@ -747,6 +758,7 @@ with DxlClient(config) as client:
     ### Test Page
     @app.route('/ping')
     def ping():
+        myToken = ""
         if request.args.get('token'):
             myToken = request.args.get('token')
 
@@ -758,7 +770,7 @@ with DxlClient(config) as client:
 
     if __name__ == '__main__':
         # Connect to the fabric
-        client.connect()
+        dxlClient.connect()
 
         #app.run(debug=True, port=5000, host='0.0.0.0')
         socketio.run(app)
