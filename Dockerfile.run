@@ -1,10 +1,7 @@
-FROM sbrumley/opendxl-webapi:0.1.1
+FROM sbrumley/opendxl-webapi:0.2.0
 
 ADD brokercerts/ brokercerts/
 ADD certs/ certs/
 ADD dxlclient.config dxlclient.config
 ADD monitor.config monitor.config
-ADD opendxl_web_api.py opendxl_web_api.py
-
-ENV FLASK_TOKEN="27612211994137900087"
 
