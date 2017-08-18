@@ -308,7 +308,10 @@ def getFileProps(myReturnVal):
 
 ## Test for correct Authentication Token
 def authenticate(token):
-    if token == "27612211994137900087":
+
+    envToken = os.getenv('FLASK_TOKEN', '27612211994137900087')
+
+    if token == envToken:
         return True
     else:
         return False
