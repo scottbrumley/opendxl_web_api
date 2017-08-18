@@ -17,6 +17,7 @@ function setFileRep {
     echo "     Testing ${TEST_URL}/tie/setfile/?sha256=${1}&token=${FLASK_TOKEN} ####"
 
     WEB_CONTENT=$(sudo wget -O - "${TEST_URL}/tie/setfile/?sha256=${1}&token=${FLASK_TOKEN}&comment=WannaCry&trustlevel=known_malicious$json=true" 2>&1)
+    echo ${WEB_CONTENT}
     if [[ ${WEB_CONTENT} == *"error"* ]]; then
         echo ""
         echo "TEST FAILED: ${TEST_NAME}"
