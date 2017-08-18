@@ -212,11 +212,10 @@ def getTieRep(md5,sha1,sha256):
         # Create the McAfee Threat Intelligence Exchange (TIE) client
         tie_client = TieClient(client)
         myGetHashes = hashMe(md5,sha1,sha256)
-        #
-        # Request and display reputation for notepad.exe
-        #
 
         reputations_dict = tie_client.get_file_reputation(myGetHashes)
+
+        client.disconnect()
 
             #myReturnVal = json.dumps(reputations_dict, sort_keys=True, indent=4, separators=(',', ': ')) + "\n"
     return reputations_dict
@@ -467,6 +466,7 @@ class dxlWait(Thread):
             for vendor in vendorList:
                 client.add_event_callback(vendorsDict[vendor]['topic'], ChgRepCallback())
 
+            client.disconnect()
             ## Listent to Events
             print "Listening for Events"
             while not thread_stop_event.isSet():
@@ -581,6 +581,7 @@ def setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr):
                 error = "invalid trust level",
                 trustlevel = trustlevelStr
             )
+        client.disconnect()
 
 ### TIE SET FILE REP
 @app.route('/tie/setfile/', methods = ['GET', 'POST'])
