@@ -14,7 +14,7 @@
 4. Create Dockerfile.run
 5. Copy monitor.config to directory
 6. sudo docker build -t mcafee/opendxl-webapi:0.2.0 -f Dockerfile.run .
-7. sudo docker run -d -p 5000:5000 --name opendxl-webapi  -ti mcafee/opendxl-webapi:0.2.0
+7. sudo docker run -d --restart unless-stopped -p 5000:5000 --name opendxl-webapi  -ti mcafee/opendxl-webapi:0.2.0
 ```
 
 1. Copy Configuration Files and Certs to local build directory (For more information check Prerequisites)
