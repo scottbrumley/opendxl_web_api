@@ -3,6 +3,7 @@
 # by their hashes)
 
 import base64
+import os
 import json, time, datetime
 from threading import Thread, Event
 import ConfigParser
