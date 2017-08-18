@@ -26,7 +26,7 @@ from flask import request
 from flask_socketio import SocketIO
 
 # Import common logging and configuration
-from common.py import *
+from common import *
 
 ## DXL Client Configuration
 CONFIG_FILE_NAME = "./dxlclient.config"
