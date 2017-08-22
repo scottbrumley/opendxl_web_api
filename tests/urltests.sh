@@ -31,7 +31,7 @@ function test_sha1 {
     echo "#### TEST: ${TEST_NAME} ####"
     echo "     Testing ${TEST_URL}/tie/getfile/?sha1=${SHA1_TEST}&json=true ####"
     WEB_CONTENT=$(wget -O - "${TEST_URL}/tie/getfile/?sha1=${SHA1_TEST}&token=${FLASK_TOKEN}&json=true" 2>&1)
-    if [[ ${WEB_CONTENT} == *"error"* ]]; then
+    if [[ ${WEB_CONTENT} == *"error"*  || ${WEB_CONTENT} == *"access denied"*  ]]; then
         echo ""
         echo "TEST FAILED: ${TEST_NAME}"
         echo $WEB_CONTENT
@@ -46,7 +46,7 @@ function test_sha256 {
     echo "#### TEST: ${TEST_NAME} ####"
     echo "     Testing ${TEST_URL}/tie/getfile/?sha256=${SHA256_TEST}&json=true ####"
     WEB_CONTENT=$(wget -O - "${TEST_URL}/tie/getfile/?sha256=${SHA256_TEST}&token=${FLASK_TOKEN}&json=true" 2>&1)
-    if [[ ${WEB_CONTENT} == *"error"* ]]; then
+    if [[ ${WEB_CONTENT} == *"error"*  || ${WEB_CONTENT} == *"access denied"*  ]]; then
         echo ""
         echo "TEST FAILED: ${TEST_NAME}"
         echo $
@@ -64,7 +64,7 @@ function test_md5 {
     echo "#### TEST: ${TEST_NAME} ####"
     echo "     Testing ${TEST_URL}/tie/getfile/?md5=${MD5_TEST}&json=true ####"
     WEB_CONTENT=$(wget -O - "${TEST_URL}/tie/getfile/?md5=${MD5_TEST}&token=${FLASK_TOKEN}&json=true" 2>&1)
-    if [[ ${WEB_CONTENT} == *"error"* ]]; then
+    if [[ ${WEB_CONTENT} == *"error"*  || ${WEB_CONTENT} == *"access denied"*  ]]; then
         echo ""
         echo "TEST FAILED: ${TEST_NAME}"
         echo $WEB_CONTENT
@@ -121,10 +121,10 @@ function test_fireEye {
 function setFileRep {
     TEST_NAME="Test WannaCry ${1}"
     echo "#### TEST: ${TEST_NAME} ####"
-    echo "     Testing ${TEST_URL}/tie/setfile/?sha256=${1}&token=${FLASK_TOKEN} ####"
+    echo "     Testing ${TEST_URL}/tie/setfile/?sha256=${1}####"
 
-    WEB_CONTENT=$(wget -O - "${TEST_URL}/tie/setfile/?sha256=${1}&token=${FLASK_TOKEN}&comment=WannaCry&trustlevel=known_malicious$json=true" 2>&1)
-    if [[ ${WEB_CONTENT} == *"error"* ]]; then
+    WEB_CONTENT=$(wget -O - "${TEST_URL}/tie/setfile/?sha256=${1}&token=${FLASK_TOKEN}&comment=WannaCry&trustlevel=known_malicious&json=true" 2>&1)
+    if [[ ${WEB_CONTENT} == *"error"*  || ${WEB_CONTENT} == *"access denied"* ]]; then
         echo ""
         echo "TEST FAILED: ${TEST_NAME}"
         echo $WEB_CONTENT
@@ -150,5 +150,5 @@ test_http_code                      ## Test basic HTTP function and return 200 H
 test_fireEye                        ## Test Setting FireEye Reputation in TIE
 #test_set unknown tzsync.exe         ## Test Setting File Reputation
 #test_set known_trusted tzsync.exe   ## Test Setting File Reputation
-#setWannaCryHashes /${ROOT_DIR}/tests/wannacryhashes.txt ## Set WanaCry File Hashes to known malicious
+setWannaCryHashes /${ROOT_DIR}/tests/wannacryhashes.txt ## Set WanaCry File Hashes to known malicious
 echo "All Test Successful"
