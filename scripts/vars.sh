@@ -6,7 +6,7 @@ FLASK_PORT=5000
 FLASK_PID_FILE=/tmp/flask.pid
 
 ### Docker Info
-BUILD_VER="0.2.0"
+BUILD_VER="0.2.1"
 LOCAL_BUILD="mcafee/opendxl-webapi:${BUILD_VER}"
 REMOTE_BUILD="sbrumley/opendxl-webapi:${BUILD_VER}"
 

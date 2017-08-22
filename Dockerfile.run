@@ -1,4 +1,4 @@
-FROM sbrumley/opendxl-webapi:0.2.0
+FROM sbrumley/opendxl-webapi:0.2.1
 
 ADD brokercerts/ brokercerts/
 ADD certs/ certs/

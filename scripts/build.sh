@@ -12,6 +12,8 @@ if [ "${1}" == "push" ]; then
     docker tag ${LOCAL_BUILD} ${REMOTE_BUILD}
     docker push ${REMOTE_BUILD}
 else
+   echo "Tagging Container ${LOCAL_BUILD} to ${REMOTE_BUILD} for Shipping"
+   docker tag ${LOCAL_BUILD} ${REMOTE_BUILD}
    echo "Building Local Image ${LOCAL_BUILD}"
    docker build -t ${LOCAL_BUILD} -f Dockerfile .
 fi
