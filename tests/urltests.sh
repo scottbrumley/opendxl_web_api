@@ -106,10 +106,9 @@ testJson='{
 function test_fireEye {
     TEST_NAME="Test FireEye"
     echo "#### TEST: ${TEST_NAME} ####"
-    echo "     Testing ${TEST_URL}/tie/fireeye/setfile/${MD5_TEST} ####"
-
-    WEB_CONTENT=$(wget -O-  --header "Content-Type: application/json" --post-file /${ROOT_DIR}/tests/fireeye.json "${TEST_URL}/tie/fireeye/setfile/${FLASK_TOKEN}" 2>&1)
-    if [[ ${WEB_CONTENT} == *"error"* ]]; then
+    echo "Testing --post-file ${ROOT_DIR}tests/fireeye.json ${TEST_URL}/tie/fireeye/setfile/${FLASK_TOKEN} ####"
+    WEB_CONTENT=$(wget -O-  --header "Content-Type: application/json" --post-file ${ROOT_DIR}tests/fireeye.json "${TEST_URL}/tie/fireeye/setfile/${FLASK_TOKEN}" 2>&1)
+    if [[ ${WEB_CONTENT} == *"error"* || ${WEB_CONTENT} == *"access denied"* ]]; then
         echo ""
         echo "TEST FAILED: ${TEST_NAME}"
         echo $WEB_CONTENT
@@ -146,10 +145,10 @@ function setWannaCryHashes {
 ### Begin Testing ###
 
 test_http_code                      ## Test basic HTTP function and return 200 HTTP STATUS CODE
-test_sha1                           ## Test Getting a SHA1 hash reputation
-test_sha256                         ## Test Getting a SHA256 hash reputation
+#test_sha1                           ## Test Getting a SHA1 hash reputation
+#test_sha256                         ## Test Getting a SHA256 hash reputation
 test_fireEye                        ## Test Setting FireEye Reputation in TIE
-test_set unknown tzsync.exe         ## Test Setting File Reputation
-test_set known_trusted tzsync.exe   ## Test Setting File Reputation
-setWannaCryHashes /${ROOT_DIR}/tests/wannacryhashes.txt ## Set WanaCry File Hashes to known malicious
+#test_set unknown tzsync.exe         ## Test Setting File Reputation
+#test_set known_trusted tzsync.exe   ## Test Setting File Reputation
+#setWannaCryHashes /${ROOT_DIR}/tests/wannacryhashes.txt ## Set WanaCry File Hashes to known malicious
 echo "All Test Successful"

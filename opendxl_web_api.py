@@ -213,9 +213,7 @@ def getTieRep(md5,sha1,sha256):
         # Create the McAfee Threat Intelligence Exchange (TIE) client
         tie_client = TieClient(client)
         myGetHashes = hashMe(md5,sha1,sha256)
-
         reputations_dict = tie_client.get_file_reputation(myGetHashes)
-
         client.disconnect()
 
             #myReturnVal = json.dumps(reputations_dict, sort_keys=True, indent=4, separators=(',', ': ')) + "\n"
@@ -572,6 +570,10 @@ def setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr):
         # Create the McAfee Threat Intelligence Exchange (TIE) client
         tie_client = TieClient(client)
 
+        print trustlevelInt
+        print mySetHashes
+        print filenameStr
+        print commentStr
         if trustlevelInt != -1:
             # Set the Enterprise reputation for notepad.exe to Known Trusted
             tie_client.set_file_reputation(
@@ -643,7 +645,8 @@ def setFireEyeTieRep(myToken):
     commentStr = "Reputation set from FireEye via OpenDXL"
     filenameStr = ""
     severityStr = "unkn"
-    myToken = ""
+
+    print "What FireEye Token = " + myToken
 
     if not authenticate(myToken):
         return jsonify(
