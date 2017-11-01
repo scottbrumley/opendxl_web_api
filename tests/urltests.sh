@@ -11,6 +11,16 @@ export FLASK_PORT=5000   ## Configure Flask Port
 source /${ROOT_DIR}/tests/vars.sh
 source /${ROOT_DIR}/tests/changerep.sh
 
+function test_flask_token {
+    echo "### Testing Flask Token ###"
+    if [ -z ${FLASK_TOKEN+x} ]; then
+        echo "FLASK_TOKEN is unset";
+        exit 1;
+    else
+        echo "FLASK_TOKEN is set to 'FLASK_TOKEN'";
+    fi
+}
+
 ### Make sure Web Service Reponds with HTTP Code of 200
 function test_http_code {
     TEST_NAME="HTTP CODE 200"
@@ -79,7 +89,6 @@ function test_fireEye {
     echo "#### TEST: ${TEST_NAME} ####"
     echo "Testing --post-file ${ROOT_DIR}tests/fireeye.json ${TEST_URL}/tie/fireeye/setfile/${FLASK_TOKEN} ####"
     WEB_CONTENT=$(wget -O-  --header "Content-Type: application/json" --post-file ${ROOT_DIR}tests/fireeye.json "${TEST_URL}/tie/fireeye/setfile/${FLASK_TOKEN}" 2>&1)
-    echo "Testing 1..2...3...."
     echo ${WEB_CONTENT}
     if [[ ${WEB_CONTENT} == *"error"* || ${WEB_CONTENT} == *"access denied"* ]]; then
         echo ""
@@ -131,13 +140,13 @@ function setWannaCryHashes {
 }
 
 ### Begin Testing ###
-
+test_flask_token
 test_http_code                      ## Test basic HTTP function and return 200 HTTP STATUS CODE
 #test_sha1                           ## Test Getting a SHA1 hash reputation
 #test_sha256                         ## Test Getting a SHA256 hash reputation
 test_fireEye                        ## Test Setting FireEye Reputation in TIE
-#test_anomali                        ## Test Anomali API
+test_anomali                        ## Test Anomali API
 #test_set unknown tzsync.exe         ## Test Setting File Reputation
 #test_set known_trusted tzsync.exe   ## Test Setting File Reputation
-setWannaCryHashes /${ROOT_DIR}/tests/wannacryhashes.txt ## Set WanaCry File Hashes to known malicious
+#setWannaCryHashes /${ROOT_DIR}/tests/wannacryhashes.txt ## Set WanaCry File Hashes to known malicious
 echo "All Test Successful"
