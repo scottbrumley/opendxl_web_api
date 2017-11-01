@@ -74,40 +74,28 @@ function test_md5 {
     fi
 }
 
-testJson='{
-  "product": "MAS",
-  "appliance-id": "00:00:00:00:00:00",
-  "appliance": "fireeye-000000",
-  "alert": {
-    "src": {
-      "url": "/data/ma/share/winxp-sp3/src/41281428cd6f503f948e931d546e340c.exe"
-    },
-    "severity": "majr",
-    "alert-url": "https://fireeye-85f7be/malware_analysis/analyses?maid=146658",
-    "explanation": {
-      "malware-detected": {
-        "malware": {
-          "executed-at": "2017-05-09T14:30:25Z",
-          "md5sum": "41281428cd6f503f948e931d546e340c",
-          "type": "exe",
-          "name": "Trojan.LuminosityLink"
-        }
-      }
-    },
-    "occurred": "2017-05-09T14:30:25Z",
-    "action": "notified",
-    "id": "146658",
-    "name": "malware-object"
-  },
-  "version": "7.7.5.577562",
-  "msg": "concise"
-}'
-
 function test_fireEye {
     TEST_NAME="Test FireEye"
     echo "#### TEST: ${TEST_NAME} ####"
     echo "Testing --post-file ${ROOT_DIR}tests/fireeye.json ${TEST_URL}/tie/fireeye/setfile/${FLASK_TOKEN} ####"
     WEB_CONTENT=$(wget -O-  --header "Content-Type: application/json" --post-file ${ROOT_DIR}tests/fireeye.json "${TEST_URL}/tie/fireeye/setfile/${FLASK_TOKEN}" 2>&1)
+    echo "Testing 1..2...3...."
+    echo ${WEB_CONTENT}
+    if [[ ${WEB_CONTENT} == *"error"* || ${WEB_CONTENT} == *"access denied"* ]]; then
+        echo ""
+        echo "TEST FAILED: ${TEST_NAME}"
+        echo $WEB_CONTENT
+        exit 1
+    else
+        echo "TEST SUCCESS: ${TEST_NAME}"
+    fi
+}
+
+function test_anomali {
+    TEST_NAME="Test Anomalie"
+    echo "#### TEST: ${TEST_NAME} ####"
+    echo "Testing --post-file ${ROOT_DIR}tests/anomali.json ${TEST_URL}/tie/anomali/setfile/${FLASK_TOKEN} ####"
+    WEB_CONTENT=$(wget -O-  --header "Content-Type: application/json" --post-file ${ROOT_DIR}tests/anomali.json "${TEST_URL}/tie/anomali/setfile/${FLASK_TOKEN}" 2>&1)
     if [[ ${WEB_CONTENT} == *"error"* || ${WEB_CONTENT} == *"access denied"* ]]; then
         echo ""
         echo "TEST FAILED: ${TEST_NAME}"
@@ -148,6 +136,7 @@ test_http_code                      ## Test basic HTTP function and return 200 H
 #test_sha1                           ## Test Getting a SHA1 hash reputation
 #test_sha256                         ## Test Getting a SHA256 hash reputation
 test_fireEye                        ## Test Setting FireEye Reputation in TIE
+#test_anomali                        ## Test Anomali API
 #test_set unknown tzsync.exe         ## Test Setting File Reputation
 #test_set known_trusted tzsync.exe   ## Test Setting File Reputation
 setWannaCryHashes /${ROOT_DIR}/tests/wannacryhashes.txt ## Set WanaCry File Hashes to known malicious

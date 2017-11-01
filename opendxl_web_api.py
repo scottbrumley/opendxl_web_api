@@ -699,6 +699,70 @@ def setFireEyeTieRep(myToken):
         setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr)
     return jsonify(request.json)
 
+### Anomali TIE SET FILE REP
+@app.route('/tie/anomali/setfile/<myToken>', methods = ['GET','POST'])
+def setAnomaliTieRep(myToken):
+    md5 = ""
+    sha1 = ""
+    sha256 = ""
+    commentStr = "Reputation set from Anomali via OpenDXL"
+    filenameStr = ""
+    severityStr = "unkn"
+
+    print "What Anomali Token = " + myToken
+
+    if not authenticate(myToken):
+        return jsonify(
+            access = "access denied"
+        )
+
+    content = request.json
+    print content
+
+    confidenceStr = content['confidence']
+    print "Confidence = " + confidenceStr
+    print "md5 = " + content['md5']
+
+    ## check for malware detection and malware fields.  If they exist get md5 if it exists
+ #   if 'malware-detected' in content['alert']['explanation']:
+ #       if 'malware' in content['alert']['explanation']['malware-detected']:
+ #           ## Get md5 hash from FireEye and FileName
+ #           if 'md5sum' in content['alert']['explanation']['malware-detected']['malware']:
+ #               md5 = content['alert']['explanation']['malware-detected']['malware']['md5sum']
+ #               print "md5 hash = " + md5
+ #           else:
+ #               return jsonify(
+ #                   error="md5sum field not present in JSON"
+ #               )
+
+            ## If there is a filename and extention then get it
+            ## Get FileName from FireEye
+ #           if 'type' in content['alert']['explanation']['malware-detected']['malware'] and 'name' in content['alert']['explanation']['malware-detected']['malware']:
+ #               filenameStr = content['alert']['explanation']['malware-detected']['malware']['name'] + "." + content['alert']['explanation']['malware-detected']['malware']['type']
+ #               print "Filename = " + filenameStr
+ #       else:
+ #           return jsonify(
+ #               error="malware field not present in JSON"
+ #           )
+
+ #   else:
+ #       return jsonify(
+ #           error="malware-detected field not present in JSON"
+ #       )
+
+    ## Check to make sure this is a valid md5 hash
+ #   if md5 != "":
+ #       if not is_md5(md5):
+ #           return jsonify(
+ #               error= "invalid md5"
+ #           )
+
+ #       trustlevelStr = fireeyeToMcAfee(severityStr)
+
+        ## Set the Reputation in TIE
+ #       setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr)
+    return jsonify(request.json)
+
 ### Default API
 @app.route('/')
 def root_path():
