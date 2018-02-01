@@ -61,8 +61,8 @@ if [[ ${1} == "debug" ]]; then
     start
     # Testing
     test
-    while true ; do continue ; done
     echo "Flask Started in Debug Mode"
+    while true ; do continue ; done
 fi
 
 if [[ ${1} == "stop" ]]; then
