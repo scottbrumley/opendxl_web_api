@@ -464,9 +464,9 @@ class dxlWait(Thread):
             info.add_topic(REQUEST_TOPIC, MyRequestCallback())
 
             ## Get list of vendorIDs and subscribe to each topic
-            vendorList = getVendorList()
-            for vendor in vendorList:
-                client.add_event_callback(vendorsDict[vendor]['topic'], ChgRepCallback())
+            #vendorList = getVendorList()
+            #for vendor in vendorList:
+            #    client.add_event_callback(vendorsDict[vendor]['topic'], ChgRepCallback())
 
             client.disconnect()
             ## Listent to Events
