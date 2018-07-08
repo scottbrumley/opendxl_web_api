@@ -158,7 +158,7 @@ for vendorSect in vendorsSections:
     venId = ConfigSectionMap(vendorSect)['vendorid']
     venName = ConfigSectionMap(vendorSect)['vendorname']
     venTopic = ConfigSectionMap(vendorSect)['vendortopic']
-    print "Adding " + venName + " Topic: " + venTopic
+    print("Adding " + venName + " Topic: " + venTopic)
     addVendorService(venId,venName,venTopic)
 
 ##### About #####
@@ -381,7 +381,7 @@ def initCharts():
         ## Send JSON
         #             socketio.emit("my_response", {'data':'Hi There'} , namespace='/test')
         if (isDup(vendorTopic, lastMessage)):
-            print "Dup Message Found.  Not Sending."
+            print("Dup Message Found.  Not Sending.")
         else:
             # Add 1 to message Count
             vendorsDict[vendorId]['count'] = 0
@@ -391,7 +391,7 @@ def initCharts():
 
 def drawTimeLine(resultStr, topicStr):
     # Extract
-    print "Topic: " + topicStr
+    print("Topic: " + topicStr)
     vendorId = getVendorId(topicStr)
 
     now = datetime.datetime.now()
@@ -412,7 +412,7 @@ def drawTimeLine(resultStr, topicStr):
     ## Send JSON
     #             socketio.emit("my_response", {'data':'Hi There'} , namespace='/test')
     if (isDup(topicStr, lastMessage)):
-        print "Dup Message Found.  Not Sending."
+        print("Dup Message Found.  Not Sending.")
     else:
         # Add 1 to message Count
         vendorsDict[vendorId]['count'] += 1
@@ -451,7 +451,7 @@ class dxlWait(Thread):
         class MyRequestCallback(RequestCallback):
             def on_request(self, request):
                 # Extract
-                print "Service recieved request payload: " + request.payload.decode()
+                print("Service recieved request payload: " + request.payload.decode())
 
         # Create the client
         with DxlClient(config) as client:
@@ -470,7 +470,7 @@ class dxlWait(Thread):
 
             client.disconnect()
             ## Listent to Events
-            print "Listening for Events"
+            print("Listening for Events")
             while not thread_stop_event.isSet():
                 time.sleep(self.delay)
 
@@ -502,13 +502,13 @@ def test_connect():
     initCharts()
 
     if not thread.isAlive():
-        print "Starting Thread"
+        print("Starting Thread")
         thread = dxlWait()
         thread.start()
 
 @socketio.on('disconnect', namespace='/test')
 def test_disconnect():
-    print('Client disconnected')
+    print("Client disconnected")
 
 ## Convert from FireEye Severity to McAfee Reputation
 def fireeyeToMcAfee(sevStr):
@@ -558,8 +558,8 @@ def setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr):
 
     mySetHashes = hashMe(md5,sha1,sha256)
 
-    print "mySetHashes:"
-    print mySetHashes
+    print("mySetHashes:")
+    print(mySetHashes)
 
     # Create the client
     with DxlClient(config) as client:
@@ -570,10 +570,10 @@ def setReputation(trustlevelStr, md5, sha1, sha256, filenameStr, commentStr):
         # Create the McAfee Threat Intelligence Exchange (TIE) client
         tie_client = TieClient(client)
 
-        print trustlevelInt
-        print mySetHashes
-        print filenameStr
-        print commentStr
+        print(trustlevelInt)
+        print(mySetHashes)
+        print(filenameStr)
+        print(commentStr)
         if trustlevelInt != -1:
             # Set the Enterprise reputation for notepad.exe to Known Trusted
             tie_client.set_file_reputation(
@@ -646,7 +646,7 @@ def setFireEyeTieRep(myToken):
     filenameStr = ""
     severityStr = "unkn"
 
-    print "What FireEye Token = " + myToken
+    print("What FireEye Token = " + myToken)
 
     if not authenticate(myToken):
         return jsonify(
@@ -654,10 +654,10 @@ def setFireEyeTieRep(myToken):
         )
 
     content = request.json
-    print content
+    print(content)
 
     severityStr = content['alert']['severity']
-    print "Severity = " + severityStr
+    print("Severity = " + severityStr)
 
     ## check for malware detection and malware fields.  If they exist get md5 if it exists
     if 'malware-detected' in content['alert']['explanation']:
@@ -665,7 +665,7 @@ def setFireEyeTieRep(myToken):
             ## Get md5 hash from FireEye and FileName
             if 'md5sum' in content['alert']['explanation']['malware-detected']['malware']:
                 md5 = content['alert']['explanation']['malware-detected']['malware']['md5sum']
-                print "md5 hash = " + md5
+                print("md5 hash = " + md5)
             else:
                 return jsonify(
                     error="md5sum field not present in JSON"
@@ -675,7 +675,7 @@ def setFireEyeTieRep(myToken):
             ## Get FileName from FireEye
             if 'type' in content['alert']['explanation']['malware-detected']['malware'] and 'name' in content['alert']['explanation']['malware-detected']['malware']:
                 filenameStr = content['alert']['explanation']['malware-detected']['malware']['name'] + "." + content['alert']['explanation']['malware-detected']['malware']['type']
-                print "Filename = " + filenameStr
+                print("Filename = " + filenameStr)
         else:
             return jsonify(
                 error="malware field not present in JSON"
