@@ -6,7 +6,9 @@ source scripts/common.sh
 echo "Checking Sudo ... "
 installSudo
 
-sudo pip install -r requirements.txt
+sudo apt-get -y install python3-pip
+
+sudo pip3 install -r requirements.txt
 
 #echo "Installing Flask ... "
 #installFlask

@@ -6,7 +6,7 @@ import base64
 import os
 import json, time, datetime
 from threading import Thread, Event
-import ConfigParser
+import configparser
 import eventlet
 eventlet.sleep()
 eventlet.monkey_patch()
@@ -63,7 +63,7 @@ providerMap = {1:'GTI', 3:'Enterprise Reputation', 5:'ATD',7:"MWG"}
 ## Message String
 messStr = ""
 
-Config = ConfigParser.ConfigParser()
+Config = configparser.ConfigParser()
 ## Vendors Topic Dictionary
 vendorsDict = {}
 
