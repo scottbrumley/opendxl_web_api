@@ -28,6 +28,7 @@ function start {
 function debug {
     echo "Running Flask ..."
     FLASK_APP="${ROOT_DIR}/opendxl_web_api.py"
+    if [ ! -e /usr/bin/flask ]; then ln -s /usr/local/bin/flask /usr/local/bin/flask ; fi && \
     /usr/local/bin/flask run --host=0.0.0.0 --port=${FLASK_PORT}
 }
 
